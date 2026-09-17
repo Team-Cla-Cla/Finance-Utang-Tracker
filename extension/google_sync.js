@@ -15,7 +15,13 @@ const GoogleSync = (function() {
     if (typeof chrome !== "undefined" && chrome.identity && chrome.identity.getRedirectURL) {
       return chrome.identity.getRedirectURL();
     }
-    return "https://" + (chrome.runtime ? chrome.runtime.id : "extension") + ".chromiumapp.org/";
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.id) {
+      return "https://" + chrome.runtime.id + ".chromiumapp.org/";
+    }
+    if (typeof window !== "undefined" && window.location && window.location.origin) {
+      return window.location.origin + window.location.pathname;
+    }
+    return "https://extension.chromiumapp.org/";
   }
 
   function extractSpreadsheetId(input) {
@@ -64,8 +70,14 @@ const GoogleSync = (function() {
       "&prompt=" + (interactive ? "select_account" : "none");
 
     return new Promise((resolve, reject) => {
-      const identityApi = (typeof browser !== "undefined" && browser.identity) ? browser.identity : chrome.identity;
+      const identityApi = (typeof browser !== "undefined" && browser.identity)
+        ? browser.identity
+        : ((typeof chrome !== "undefined" && chrome.identity) ? chrome.identity : null);
       if (!identityApi || !identityApi.launchWebAuthFlow) {
+        if (typeof window !== "undefined") {
+          window.location.href = authUrl;
+          return;
+        }
         return reject(new Error("Browser identity API not supported in this context."));
       }
 
@@ -73,7 +85,7 @@ const GoogleSync = (function() {
         url: authUrl,
         interactive: interactive
       }, function(responseUrl) {
-        if (chrome.runtime && chrome.runtime.lastError) {
+        if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.lastError) {
           return reject(new Error(chrome.runtime.lastError.message));
         }
         if (!responseUrl) {

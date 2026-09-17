@@ -3016,8 +3016,8 @@ function setupEventListeners() {
   const btnOpenTab = document.getElementById("btnOpenTab");
   if (btnOpenTab) {
     btnOpenTab.addEventListener("click", () => {
-      const url = chrome.runtime ? chrome.runtime.getURL("popup.html") : "popup.html";
-      if (chrome.tabs && chrome.tabs.create) {
+      const url = (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.getURL) ? chrome.runtime.getURL("popup.html") : "popup.html";
+      if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.create) {
         chrome.tabs.create({ url });
       } else {
         window.open(url, "_blank");
@@ -3251,18 +3251,28 @@ function setupEventListeners() {
   });
 
   // Settings & Sync Modal
-  document.getElementById("btnSettings").addEventListener("click", () => {
-    updateGoogleStatusUI();
-    document.getElementById("cfgClientId").value = appState.googleAuth.clientId || "";
-    document.getElementById("cfgSheet").value = appState.googleAuth.spreadsheetId || "";
-    const roCheck = document.getElementById("cfgRollover");
-    if (roCheck) roCheck.checked = !!appState.dailyRollover;
-    const redirectInput = document.getElementById("cfgRedirectUri");
-    if (redirectInput) {
-      redirectInput.value = GoogleSync.getRedirectUri();
-    }
-    document.getElementById("settingsModal").style.display = "flex";
-  });
+  const btnSettings = document.getElementById("btnSettings");
+  if (btnSettings) {
+    btnSettings.addEventListener("click", () => {
+      try {
+        updateGoogleStatusUI();
+        const cfgC = document.getElementById("cfgClientId");
+        if (cfgC) cfgC.value = (appState.googleAuth && appState.googleAuth.clientId) || "";
+        const cfgS = document.getElementById("cfgSheet");
+        if (cfgS) cfgS.value = (appState.googleAuth && appState.googleAuth.spreadsheetId) || "";
+        const roCheck = document.getElementById("cfgRollover");
+        if (roCheck) roCheck.checked = !!appState.dailyRollover;
+        const redirectInput = document.getElementById("cfgRedirectUri");
+        if (redirectInput && typeof GoogleSync !== "undefined" && GoogleSync.getRedirectUri) {
+          redirectInput.value = GoogleSync.getRedirectUri();
+        }
+      } catch (err) {
+        console.warn("Settings init note:", err);
+      }
+      const modal = document.getElementById("settingsModal");
+      if (modal) modal.style.display = "flex";
+    });
+  }
 
   const btnCopyUri = document.getElementById("btnCopyRedirectUri");
   if (btnCopyUri) {
