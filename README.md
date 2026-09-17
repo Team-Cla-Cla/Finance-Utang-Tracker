@@ -2,9 +2,13 @@
 
 This is a Personal Finance App
 
-Offline-first personal finance and debt tracker for students and daily commuters. Built as a cross-browser extension (Firefox, Chrome, Brave, Edge) and terminal CLI, with background auto-sync to your personal Google Sheet via direct Google Sheets API v4.
+Offline-first personal finance and debt tracker for students and daily commuters. Built as a cross-browser extension (Firefox, Chrome, Brave, Edge), responsive mobile web app (PWA), and terminal CLI, with background auto-sync to your personal Google Sheet via direct Google Sheets API v4.
 
 Zero third-party servers, zero hosting costs, zero tracking.
+
+> 📱 **Live Mobile & Web App**: [https://team-cla-cla.github.io/Finance-Utang-Tracker/](https://team-cla-cla.github.io/Finance-Utang-Tracker/)
+>
+> 🧩 **Firefox Add-on**: `finance-utang-tracker@ryme.local.xpi` | **Chrome / Edge / Brave**: Load unpacked `/extension`
 
 ---
 

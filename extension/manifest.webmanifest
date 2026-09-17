@@ -1,0 +1,27 @@
+{
+  "name": "Finance & Utang Tracker",
+  "short_name": "Finance",
+  "description": "Minimalist, offline-first personal finance and utang tracker with debt payoff projections and Google Sheets sync.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "icons": [
+    {
+      "src": "icons/icon48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
