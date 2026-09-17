@@ -41,6 +41,35 @@
       z-index: 0;
     }
 
+    /* Large Font Accessibility Mode */
+    html.font-large {
+      font-size: 114%;
+    }
+    html.font-large body {
+      font-size: 1.05em;
+    }
+    html.font-large .mono {
+      letter-spacing: 0.02em;
+    }
+    html.font-large input,
+    html.font-large select,
+    html.font-large textarea {
+      font-size: 0.88rem;
+    }
+    html.font-large .hero-val {
+      font-size: 2.35rem;
+    }
+    html.font-large .hero-sub {
+      font-size: 0.78rem;
+    }
+    html.font-large .pill-btn {
+      font-size: 0.75rem;
+      padding: 5px 9px;
+    }
+    html.font-large .feed-item {
+      font-size: 0.76rem;
+    }
+
     /* App Container */
     .app-container {
       width: 100%;
@@ -608,7 +637,8 @@
     </div>
     <div class="header-actions">
       <span id="dateLabel" class="mono" style="font-size:0.75rem; color:var(--muted);">--</span>
-      <button id="btnAnalytics" class="icon-btn" title="Grafana-style Metrics & Missed Days" style="font-size:0.75rem;">[metrics]</button>
+      <button id="btnToggleFontSize" class="icon-btn" title="Toggle Larger Font Size" style="font-size:0.75rem; font-weight:600;">A+</button>
+      <button id="btnAnalytics" class="icon-btn" title="Metrics &amp; Missed Days" style="font-size:0.75rem;">[metrics]</button>
       <button id="btnOpenTab" class="icon-btn" title="Open in Full Tab" style="font-size:0.75rem;">↗</button>
       <button id="btnSettings" class="icon-btn" title="Settings &amp; Google Account">⚙</button>
     </div>

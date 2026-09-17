@@ -21,6 +21,7 @@ let appState = {
   stashes: [],
   stashMasked: false,
   dailyRollover: false,
+  largeFont: false,
   installDate: null,
   auditLog: [],
   syncQueue: [],
@@ -40,13 +41,14 @@ let isSyncing = false;
 // --- Storage & Initialization ---
 function loadLocalState(callback) {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-    chrome.storage.local.get(["transactions", "debts", "presets", "stashes", "stashMasked", "dailyRollover", "installDate", "auditLog", "syncQueue", "googleAuth"], function(res) {
+    chrome.storage.local.get(["transactions", "debts", "presets", "stashes", "stashMasked", "dailyRollover", "largeFont", "installDate", "auditLog", "syncQueue", "googleAuth"], function(res) {
       if (res.transactions) appState.transactions = res.transactions;
       if (res.debts) appState.debts = res.debts;
       if (res.presets) appState.presets = res.presets;
       if (res.stashes) appState.stashes = res.stashes;
       if (typeof res.stashMasked === "boolean") appState.stashMasked = res.stashMasked;
       if (typeof res.dailyRollover === "boolean") appState.dailyRollover = res.dailyRollover;
+      if (typeof res.largeFont === "boolean") appState.largeFont = res.largeFont;
       if (res.installDate) appState.installDate = res.installDate;
       if (!appState.installDate) {
         appState.installDate = getLocalDateStr();
@@ -65,6 +67,7 @@ function loadLocalState(callback) {
     const s = localStorage.getItem("stashes");
     const sm = localStorage.getItem("stashMasked");
     const ro = localStorage.getItem("dailyRollover");
+    const lf = localStorage.getItem("largeFont");
     const idt = localStorage.getItem("installDate");
     const al = localStorage.getItem("auditLog");
     const q = localStorage.getItem("syncQueue");
@@ -75,6 +78,7 @@ function loadLocalState(callback) {
     if (s) appState.stashes = JSON.parse(s);
     if (sm) appState.stashMasked = JSON.parse(sm);
     if (ro) appState.dailyRollover = JSON.parse(ro);
+    if (lf) appState.largeFont = JSON.parse(lf);
     if (idt) appState.installDate = JSON.parse(idt);
     if (!appState.installDate) {
       appState.installDate = getLocalDateStr();
@@ -96,6 +100,7 @@ function persistState() {
       stashes: appState.stashes,
       stashMasked: appState.stashMasked,
       dailyRollover: appState.dailyRollover,
+      largeFont: appState.largeFont,
       installDate: appState.installDate,
       auditLog: appState.auditLog,
       syncQueue: appState.syncQueue,
@@ -108,6 +113,7 @@ function persistState() {
     localStorage.setItem("stashes", JSON.stringify(appState.stashes));
     localStorage.setItem("stashMasked", JSON.stringify(appState.stashMasked));
     localStorage.setItem("dailyRollover", JSON.stringify(appState.dailyRollover));
+    localStorage.setItem("largeFont", JSON.stringify(appState.largeFont));
     localStorage.setItem("installDate", JSON.stringify(appState.installDate));
     localStorage.setItem("auditLog", JSON.stringify(appState.auditLog));
     localStorage.setItem("syncQueue", JSON.stringify(appState.syncQueue));
@@ -2945,8 +2951,34 @@ function updateCalendarDayInspector(dayData, dateStr) {
   }
 }
 
+function applyFontSizePreference() {
+  const isLarge = Boolean(appState.largeFont);
+  document.documentElement.classList.toggle("font-large", isLarge);
+  const btn = document.getElementById("btnToggleFontSize");
+  if (btn) {
+    btn.textContent = isLarge ? "A-" : "A+";
+    btn.title = isLarge ? "Switch to Default Font Size" : "Switch to Larger Font Size";
+    if (isLarge) {
+      btn.style.color = "var(--positive)";
+      btn.style.borderColor = "rgba(16, 185, 129, 0.4)";
+    } else {
+      btn.style.color = "";
+      btn.style.borderColor = "";
+    }
+  }
+}
+
 // --- Event Listeners Setup ---
 function setupEventListeners() {
+  const btnToggleFont = document.getElementById("btnToggleFontSize");
+  if (btnToggleFont) {
+    btnToggleFont.addEventListener("click", () => {
+      appState.largeFont = !appState.largeFont;
+      applyFontSizePreference();
+      persistState();
+    });
+  }
+
   document.getElementById("btnExp").addEventListener("click", () => setMode("Expense"));
   document.getElementById("btnAllow").addEventListener("click", () => setMode("Allowance"));
   document.getElementById("btnUtang").addEventListener("click", () => setMode("Utang"));
@@ -3629,6 +3661,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderCalendarView();
   setupEventListeners();
   loadLocalState(() => {
+    applyFontSizePreference();
     renderUI();
     if (navigator.onLine && appState.googleAuth && appState.googleAuth.token) {
       triggerAutoSync();
