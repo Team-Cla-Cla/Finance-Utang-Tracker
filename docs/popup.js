@@ -2602,10 +2602,24 @@ async function triggerAutoSync() {
 
 async function loginGoogle() {
   const btn = document.getElementById("btnGoogleLogin");
-  btn.disabled = true;
-  btn.textContent = "Connecting...";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "Connecting...";
+  }
 
-  const clientId = appState.googleAuth.clientId || "";
+  const clientId = (appState.googleAuth && appState.googleAuth.clientId) ? appState.googleAuth.clientId.trim() : "";
+  if (!clientId) {
+    showStatus("Please paste your Google OAuth Client ID in Settings first", true);
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "Connect Google";
+    }
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.style.display = "flex";
+    const cfgC = document.getElementById("cfgClientId");
+    if (cfgC) cfgC.focus();
+    return;
+  }
 
   async function postLoginHydration(token, email) {
     appState.googleAuth.token = token;
@@ -2619,6 +2633,8 @@ async function loginGoogle() {
       if (!sheetId) {
         sheetId = await GoogleSync.getOrCreateSpreadsheet(token);
         appState.googleAuth.spreadsheetId = sheetId;
+        const cfgS = document.getElementById("cfgSheet");
+        if (cfgS) cfgS.value = sheetId;
         persistState();
       }
       await hydrateFromCloud(token, sheetId);
@@ -2628,10 +2644,15 @@ async function loginGoogle() {
     await triggerAutoSync();
   }
 
-  if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
+  const isExtensionRuntime = typeof chrome !== "undefined" && chrome.runtime && !!chrome.runtime.id &&
+    (location.protocol === "chrome-extension:" || location.protocol === "moz-extension:");
+
+  if (isExtensionRuntime && chrome.runtime.sendMessage) {
     chrome.runtime.sendMessage({ type: "LOGIN_GOOGLE", clientId }, async (res) => {
-      btn.disabled = false;
-      btn.textContent = "Connect Google";
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Connect Google";
+      }
 
       if (chrome.runtime.lastError) {
         try {
@@ -2653,13 +2674,17 @@ async function loginGoogle() {
   } else {
     try {
       const token = await GoogleSync.authenticate(clientId, true);
-      const email = await GoogleSync.getUserEmail(token);
-      await postLoginHydration(token, email);
+      if (token) {
+        const email = await GoogleSync.getUserEmail(token);
+        await postLoginHydration(token, email);
+      }
     } catch (err) {
       showStatus("Google Login Error: " + err.message, true);
     } finally {
-      btn.disabled = false;
-      btn.textContent = "Connect Google";
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Connect Google";
+      }
     }
   }
 }
@@ -3673,7 +3698,45 @@ document.addEventListener("DOMContentLoaded", () => {
   loadLocalState(() => {
     applyFontSizePreference();
     renderUI();
-    if (navigator.onLine && appState.googleAuth && appState.googleAuth.token) {
+
+    // Check if returning from Google OAuth in standalone web / mobile mode
+    if (typeof window !== "undefined" && window.location && window.location.hash) {
+      const hash = window.location.hash;
+      const match = hash.match(/[#&]access_token=([^&]+)/);
+      if (match && match[1]) {
+        const token = match[1];
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+        GoogleSync.getUserEmail(token).then(async (email) => {
+          appState.googleAuth.token = token;
+          appState.googleAuth.email = email;
+          persistState();
+          updateGoogleStatusUI();
+          showStatus(`Connected as ${email}`, false);
+
+          let sheetId = appState.googleAuth.spreadsheetId;
+          try {
+            if (!sheetId) {
+              sheetId = await GoogleSync.getOrCreateSpreadsheet(token);
+              if (sheetId) {
+                appState.googleAuth.spreadsheetId = sheetId;
+                persistState();
+              }
+            }
+            await hydrateFromCloud(token, sheetId);
+            renderUI();
+            showStatus("Synchronized with Google Sheets", false);
+          } catch (e) {
+            console.warn("Post-redirect hydration note:", e);
+          }
+          await triggerAutoSync();
+        }).catch((err) => {
+          console.error("Failed to fetch user email:", err);
+          showStatus("Google Login Error: " + err.message, true);
+        });
+      }
+    } else if (navigator.onLine && appState.googleAuth && appState.googleAuth.token) {
       triggerAutoSync();
     }
   });

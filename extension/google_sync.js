@@ -57,7 +57,20 @@ const GoogleSync = (function() {
     return Math.round(num * 100) / 100;
   }
 
-  // Cross-browser OAuth flow (Chrome & Firefox)
+  function extractTokenFromUrl(url) {
+    if (!url) throw new Error("No response URL received from authentication provider.");
+    const match = url.match(/[#&]access_token=([^&]+)/);
+    if (match && match[1]) {
+      return match[1];
+    }
+    const errMatch = url.match(/[#&]error=([^&]+)/);
+    if (errMatch) {
+      throw new Error(decodeURIComponent(errMatch[1]));
+    }
+    throw new Error("Failed to obtain access token from response URL.");
+  }
+
+  // Cross-browser OAuth flow (Chrome, Firefox & Standalone Web)
   async function authenticate(clientId, interactive = true) {
     const cId = clientId ? clientId.trim() : DEFAULT_CLIENT_ID;
     const redirectUri = getRedirectUri();
@@ -69,38 +82,39 @@ const GoogleSync = (function() {
       "&scope=" + encodeURIComponent(SCOPES.join(" ")) +
       "&prompt=" + (interactive ? "select_account" : "none");
 
-    return new Promise((resolve, reject) => {
-      const identityApi = (typeof browser !== "undefined" && browser.identity)
-        ? browser.identity
-        : ((typeof chrome !== "undefined" && chrome.identity) ? chrome.identity : null);
-      if (!identityApi || !identityApi.launchWebAuthFlow) {
-        if (typeof window !== "undefined") {
-          window.location.href = authUrl;
-          return;
-        }
-        return reject(new Error("Browser identity API not supported in this context."));
+    // 1. Firefox WebExtensions (native Promise)
+    if (typeof browser !== "undefined" && browser.identity && browser.identity.launchWebAuthFlow) {
+      try {
+        const responseUrl = await browser.identity.launchWebAuthFlow({ url: authUrl, interactive });
+        return extractTokenFromUrl(responseUrl);
+      } catch (err) {
+        throw new Error(err.message || "Authentication cancelled.");
       }
+    }
 
-      identityApi.launchWebAuthFlow({
-        url: authUrl,
-        interactive: interactive
-      }, function(responseUrl) {
-        if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.lastError) {
-          return reject(new Error(chrome.runtime.lastError.message));
-        }
-        if (!responseUrl) {
-          return reject(new Error("Authentication cancelled or no response URL."));
-        }
-
-        const match = responseUrl.match(/[#&]access_token=([^&]+)/);
-        if (match && match[1]) {
-          resolve(match[1]);
-        } else {
-          const errMatch = responseUrl.match(/[#&]error=([^&]+)/);
-          reject(new Error(errMatch ? decodeURIComponent(errMatch[1]) : "Failed to obtain access token."));
-        }
+    // 2. Chromium Extensions (callback-based)
+    if (typeof chrome !== "undefined" && chrome.identity && chrome.identity.launchWebAuthFlow) {
+      return new Promise((resolve, reject) => {
+        chrome.identity.launchWebAuthFlow({ url: authUrl, interactive }, function(responseUrl) {
+          if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.lastError) {
+            return reject(new Error(chrome.runtime.lastError.message));
+          }
+          try {
+            resolve(extractTokenFromUrl(responseUrl));
+          } catch (e) {
+            reject(e);
+          }
+        });
       });
-    });
+    }
+
+    // 3. Standalone Web / Mobile Mode (redirect flow)
+    if (typeof window !== "undefined" && window.location) {
+      window.location.href = authUrl;
+      return new Promise(() => {}); // Wait for page navigation
+    }
+
+    throw new Error("OAuth identity flow not supported in this environment.");
   }
 
   // Get user profile email
