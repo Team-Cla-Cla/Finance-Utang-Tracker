@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Finance &amp; Utang</title>
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icons/icon128.png">
+  <style>
+    :root {
+      --bg: #09090b;
+      --surface: #121215;
+      --border: #222226;
+      --text: #f4f4f5;
+      --muted: #71717a;
+      --faint: #3f3f46;
+      --positive: #10b981;
+      --negative: #f43f5e;
+      --accent: #e4e4e7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif; -webkit-font-smoothing: antialiased; }
+    
+    /* Sleek scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+
+    html { width: 380px; box-sizing: border-box; margin: 0; padding: 0; background: #08080a; }
+    body { background: transparent; color: var(--text); padding: 14px; width: 380px; min-width: 380px; max-width: 380px; box-sizing: border-box; max-height: 590px; overflow-x: hidden; overflow-y: auto; margin: 0; position: relative; }
+    
+    /* Antigravity Global Canvas */
+    #antigravityBgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* App Container */
+    .app-container {
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Dashboard Layout Containers */
+    .dashboard-layout { display: flex; flex-direction: column; width: 100%; }
+    .dashboard-col { display: flex; flex-direction: column; width: 100%; }
+
+    /* Centered View for intermediate sizes (500px - 839px) */
+    @media (min-width: 500px) and (max-width: 839px) {
+      html { width: 100% !important; min-width: 100% !important; max-width: none !important; height: 100%; min-height: 100%; background: #08080a; }
+      body { width: 100% !important; min-width: 0 !important; max-width: none !important; min-height: 100vh; margin: 0 !important; padding: 0 !important; background: transparent; border: none; box-shadow: none; max-height: none; overflow-x: hidden; overflow-y: auto; }
+      .app-container {
+        width: calc(100% - 32px);
+        min-width: 360px;
+        max-width: 520px;
+        margin: 24px auto;
+        padding: 16px 20px;
+        background: rgba(12, 12, 16, 0.50);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+        box-sizing: border-box;
+      }
+    }
+
+    /* Desktop Full Tab Dashboard (>= 840px) */
+    @media (min-width: 840px) {
+      html { width: 100% !important; min-width: 100% !important; max-width: none !important; height: 100%; min-height: 100%; background: #08080a; }
+      body {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .app-container {
+        width: 85vw !important;
+        max-width: 85vw !important;
+        min-width: 85vw !important;
+        height: 85vh !important;
+        min-height: 85vh !important;
+        max-height: 85vh !important;
+        margin: auto !important;
+        padding: 24px 30px;
+        background: rgba(12, 12, 16, 0.50);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(0,0,0,0.75);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      #btnOpenTab { display: none; }
+      header { margin-bottom: 16px; padding-bottom: 12px; flex-shrink: 0; }
+      .brand { font-size: 0.95rem; }
+      .dashboard-layout {
+        display: grid;
+        grid-template-columns: 360px minmax(320px, 1fr) 350px;
+        gap: 24px;
+        align-items: stretch;
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+      }
+      .col-left {
+        min-width: 0;
+        overflow-y: auto;
+        padding-right: 6px;
+        display: flex;
+        flex-direction: column;
+      }
+      .col-right {
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .col-calendar {
+        min-width: 0;
+        overflow-y: auto;
+        padding-right: 6px;
+        display: flex;
+        flex-direction: column;
+      }
+      #feedList {
+        flex: 1;
+        min-height: 180px;
+        max-height: none;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      #utangList {
+        max-height: 180px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+    }
+    @media (min-width: 840px) and (max-width: 1140px) {
+      .dashboard-layout {
+        grid-template-columns: 340px minmax(0, 1fr) !important;
+        gap: 18px !important;
+      }
+      .col-calendar {
+        grid-column: 1 / -1;
+      }
+    }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+
+    header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .brand-row { display: flex; align-items: center; gap: 8px; }
+    .brand { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); }
+    .sync-badge { font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; background: #1c1c21; border: 1px solid var(--border); color: var(--muted); cursor: pointer; text-decoration: none; }
+    .sync-badge.synced { color: var(--positive); border-color: rgba(16, 185, 129, 0.2); }
+    .sync-badge.pending { color: #f59e0b; border-color: rgba(245, 158, 11, 0.2); }
+    .sync-badge.syncing { color: var(--accent); }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .icon-btn { background: none; border: none; color: var(--muted); cursor: pointer; padding: 2px; font-size: 0.85rem; }
+    .icon-btn:hover { color: var(--text); }
+
+    .hero { margin-bottom: 14px; }
+    .hero-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .hero-val { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 6px; }
+    .hero-sub { font-size: 0.75rem; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-sub span b { font-weight: 600; }
+
+    .utang-hero { background: rgba(18, 18, 23, 0.50); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 0.75rem; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .utang-hero-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+    .utang-proj { font-size: 0.72rem; color: var(--muted); border-top: 1px solid var(--border); padding-top: 4px; margin-top: 4px; }
+    .utang-proj b { color: var(--text); }
+
+    .checkin { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; display: none; }
+    .checkin-msg { font-size: 0.75rem; color: var(--text); margin-bottom: 6px; }
+    .checkin-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-mini { background: #1c1c21; border: 1px solid var(--border); color: var(--text); padding: 5px 9px; border-radius: 6px; font-size: 0.72rem; cursor: pointer; font-weight: 500; }
+    .btn-mini:hover { background: #27272a; }
+    .btn-mini.primary { background: var(--text); color: var(--bg); border: none; font-weight: 600; }
+
+    .section-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+    .pills-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .pills-row { display: flex; gap: 4px; flex-wrap: wrap; max-width: 100%; }
+    .pill { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 5px; font-size: 0.72rem; cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pill:hover { border-color: var(--faint); }
+    .pill:active { background: #27272a; }
+
+    .form-wrap { background: rgba(18, 18, 23, 0.50); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 18px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .mode-switch { display: flex; gap: 4px; background: #09090b; padding: 2px; border-radius: 6px; margin-bottom: 10px; border: 1px solid var(--border); }
+    .mode-btn { flex: 1; border: none; background: none; color: var(--muted); font-size: 0.72rem; font-weight: 600; padding: 5px 0; border-radius: 4px; cursor: pointer; text-align: center; }
+    .mode-btn.active { background: #27272a; color: var(--text); }
+
+    .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 6px; margin-bottom: 6px; }
+    input, select { width: 100%; min-width: 0; background: #09090b; border: 1px solid var(--border); color: var(--text); padding: 7px 9px; border-radius: 5px; font-size: 0.8rem; box-sizing: border-box; }
+    input:focus, select:focus { outline: none; border-color: var(--muted); }
+    .btn-submit { width: 100%; background: var(--text); color: var(--bg); border: none; padding: 8px; border-radius: 5px; font-weight: 600; font-size: 0.8rem; cursor: pointer; margin-top: 2px; }
+    .btn-submit:hover { opacity: 0.9; }
+
+    .status-msg { font-size: 0.72rem; margin-top: 4px; text-align: center; min-height: 18px; line-height: 18px; padding: 2px 4px; visibility: hidden; display: block; }
+    .status-msg.error { color: var(--negative); visibility: visible; }
+    .status-msg.success { color: var(--positive); visibility: visible; }
+
+    .feed { display: flex; flex-direction: column; margin-bottom: 18px; }
+    .feed-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #18181b; font-size: 0.78rem; gap: 6px; }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; overflow: hidden; }
+    .feed-cat { font-weight: 500; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .feed-meta { font-size: 0.68rem; color: var(--muted); }
+    .feed-right { text-align: right; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .feed-amt { font-weight: 600; font-size: 0.82rem; }
+    .feed-amt.pos { color: var(--positive); }
+    .feed-amt.neg { color: var(--negative); }
+    .feed-btn { background: none; border: none; color: var(--faint); font-size: 0.7rem; cursor: pointer; padding: 2px 3px; }
+    .feed-btn:hover { color: var(--text); }
+    .feed-btn.del:hover { color: var(--negative); }
+    .feed-btn.action { color: var(--positive); text-decoration: underline; font-weight: 600; }
+
+    /* Modal */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 14px; }
+    .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 340px; padding: 14px; max-height: 90vh; overflow-y: auto; }
+    .modal-title { font-size: 0.8rem; font-weight: 600; margin-bottom: 10px; color: var(--text); display: flex; justify-content: space-between; align-items: center; }
+
+    /* Stash Card */
+    .stash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; margin-bottom: 12px; }
+    .stash-row { display: flex; justify-content: space-between; align-items: center; }
+    .stash-quick-list { margin-top: 6px; border-top: 1px solid var(--border); padding-top: 6px; display: flex; flex-direction: column; gap: 4px; }
+    .stash-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; background: #09090b; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; }
+
+    /* Empty Pills Hint */
+    .empty-pills-hint { font-size: 0.72rem; color: var(--muted); border: 1px dashed var(--border); border-radius: 6px; padding: 8px 10px; width: 100%; cursor: pointer; line-height: 1.4; box-sizing: border-box; }
+    .empty-pills-hint:hover { border-color: var(--faint); color: var(--text); }
+
+    /* Pill Filter Tabs */
+    .pill-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+    .pill-tab-btn { background: #18181b; border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; }
+    .pill-tab-btn.active { background: var(--text); color: var(--bg); font-weight: 600; border-color: var(--text); }
+    .cat-tab-btn { background: #18181b; border: 1px solid var(--border); color: var(--muted); padding: 1px 6px; border-radius: 4px; font-size: 0.62rem; cursor: pointer; }
+    .cat-tab-btn.active { background: var(--text); color: var(--bg); font-weight: 600; border-color: var(--text); }
+
+    /* Analytics Semi-Fullscreen Window */
+    #analyticsModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(8, 8, 10, 0.45) !important;
+      backdrop-filter: blur(4px) !important;
+      -webkit-backdrop-filter: blur(4px) !important;
+      z-index: 500;
+      padding: 0;
+      margin: 0;
+      overflow-y: auto;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    /* Metrics Auto-Expand in extension popup */
+    body.metrics-expanded .app-container {
+      display: none !important;
+    }
+    html.metrics-expanded, body.metrics-expanded {
+      width: 780px !important;
+      min-width: 780px !important;
+      max-width: 780px !important;
+      height: 600px !important;
+      min-height: 600px !important;
+      max-height: 600px !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      overflow: hidden !important;
+    }
+
+    #grafanaModalBox {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      border: none;
+      border-radius: 0;
+      padding: 12px 14px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: transparent;
+      box-sizing: border-box;
+      position: relative;
+      z-index: 1;
+    }
+    @media (min-width: 700px) {
+      .grafana-body-grid {
+        display: grid !important;
+        grid-template-columns: 1.18fr 0.82fr !important;
+        gap: 14px !important;
+        align-items: start !important;
+      }
+      .grafana-streak-panel {
+        grid-template-columns: repeat(4, 1fr) !important;
+      }
+    }
+    @media (min-width: 840px) {
+      #analyticsModal {
+        width: 100vw !important;
+        height: 100vh !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        display: none;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+      }
+      html.metrics-expanded, body.metrics-expanded {
+        width: 100% !important;
+        min-width: 100% !important;
+        max-width: none !important;
+        height: 100vh !important;
+        min-height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+      }
+      #grafanaModalBox {
+        width: 85vw !important;
+        max-width: 85vw !important;
+        min-width: 85vw !important;
+        height: 85vh !important;
+        min-height: 85vh !important;
+        max-height: 85vh !important;
+        background: rgba(12, 12, 16, 0.50) !important;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 16px !important;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8) !important;
+        padding: 24px 30px !important;
+        overflow-y: auto !important;
+        margin: auto !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .grafana-body-grid {
+        display: grid !important;
+        grid-template-columns: 1.15fr 0.85fr !important;
+        gap: 20px !important;
+        align-items: start !important;
+        flex: 1 !important;
+      }
+    }
+    .grafana-streak-panel, .grafana-panel, .grafana-meta-bar {
+      background: rgba(18, 18, 22, 0.50) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    }
+    .streak-hero {
+      background: rgba(12, 12, 15, 0.50) !important;
+      border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* Grafana Style Metrics */
+    .grafana-streak-panel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+    @media (max-width: 440px) {
+      .grafana-streak-panel { grid-template-columns: repeat(2, 1fr); }
+    }
+    .streak-hero { border-radius: 6px; padding: 8px 6px; text-align: center; }
+    .streak-val { font-size: 1.05rem; font-weight: 700; }
+    .streak-label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+
+    /* Secondary Meta Bar */
+    .grafana-meta-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 0.68rem; border-radius: 6px; padding: 6px 10px; margin-bottom: 10px; color: var(--muted); }
+    .grafana-meta-bar b { color: var(--text); }
+
+    .grafana-panel { border-radius: 6px; padding: 10px; margin-bottom: 10px; }
+    .panel-header { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+    /* Grafana Body Layout */
+    .grafana-body-grid { display: flex; flex-direction: column; gap: 10px; }
+    .grafana-body-col { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+
+    /* Missed Days Grid */
+    .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+    .day-cell { border: 1px solid var(--border); border-radius: 4px; padding: 4px 2px; text-align: center; font-size: 0.62rem; background: #09090b; }
+    .day-cell.active-day { border-color: var(--positive); background: rgba(34, 197, 94, 0.1); color: var(--positive); }
+    .day-cell.missed-day { border-color: var(--negative); background: rgba(239, 68, 68, 0.15); color: var(--negative); font-weight: 600; }
+    .day-cell.untracked-day { border-color: #1f1f23; color: #52525b; opacity: 0.45; }
+    .day-cell.today-cell { outline: 1px solid var(--text); font-weight: 700; }
+
+    /* Charts & Breakdown */
+    .chart-svg { width: 100%; height: 90px; }
+    .cat-bar-wrap { margin-bottom: 6px; }
+    .cat-bar-header { display: flex; justify-content: space-between; font-size: 0.68rem; margin-bottom: 2px; }
+    .cat-bar-track { width: 100%; height: 6px; background: #27272a; border-radius: 3px; overflow: hidden; }
+    .cat-bar-fill { height: 100%; border-radius: 3px; transition: width 0.2s ease; }
+    .audit-list { max-height: 140px; overflow-y: auto; font-size: 0.68rem; display: flex; flex-direction: column; gap: 4px; }
+    .audit-entry { background: #09090b; border: 1px solid #1f1f23; border-radius: 4px; padding: 4px 6px; display: flex; justify-content: space-between; }
+
+    /* Telemetry Chronometer (Clock to Milliseconds) */
+    .chrono-card {
+      background: rgba(18, 18, 23, 0.50);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .chrono-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.65rem;
+      margin-bottom: 6px;
+    }
+    .chrono-tag { color: var(--positive); font-weight: 700; letter-spacing: 0.06em; }
+    .chrono-zone { color: var(--muted); }
+    .chrono-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+      margin-bottom: 4px;
+    }
+    .chrono-hms {
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fafafa;
+    }
+    .chrono-ms {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+    .chrono-sub {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.62rem;
+      color: var(--muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 6px;
+      margin-top: 4px;
+    }
+
+    /* Full Monthly Calendar */
+    .calendar-card {
+      background: rgba(18, 18, 23, 0.50);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .cal-month-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 0.62rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cal-days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+      margin-bottom: 10px;
+    }
+    .cal-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.68rem;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      background: rgba(24, 24, 28, 0.5);
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .cal-day-cell:hover {
+      background: rgba(39, 39, 42, 0.8);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+    .cal-day-cell.other-month {
+      color: #3f3f46;
+      opacity: 0.35;
+      background: transparent;
+    }
+    .cal-day-cell.is-today {
+      border-color: var(--positive);
+      color: var(--positive);
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    .cal-day-cell.is-selected {
+      background: rgba(56, 189, 248, 0.2) !important;
+      border-color: var(--accent) !important;
+      color: #fff !important;
+      font-weight: 700;
+    }
+    .cal-dot-row {
+      display: flex;
+      gap: 2px;
+      position: absolute;
+      bottom: 2px;
+    }
+    .cal-dot {
+      width: 3.5px;
+      height: 3.5px;
+      border-radius: 50%;
+    }
+    .cal-dot.exp { background: var(--negative); }
+    .cal-dot.inc { background: var(--positive); }
+    .cal-dot.both { background: #f59e0b; }
+
+    /* Day Inspector */
+    .cal-inspector {
+      background: rgba(12, 12, 15, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 0.68rem;
+    }
+    .cal-insp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 4px;
+    }
+    .cal-insp-stats {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      gap: 6px;
+    }
+    .cal-insp-txs {
+      margin-top: 6px;
+      max-height: 80px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .cal-tx-mini {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 4px;
+      background: rgba(24, 24, 28, 0.6);
+      border-radius: 3px;
+      font-size: 0.62rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Fullscreen Interactive Antigravity Circle Grid Canvas -->
+  <canvas id="antigravityBgCanvas"></canvas>
+
+  <div class="app-container">
+    <header>
+    <div class="brand-row">
+      <div class="brand">Finance</div>
+      <button id="syncBadge" class="sync-badge mono" title="Sync Status">Local Only</button>
+    </div>
+    <div class="header-actions">
+      <span id="dateLabel" class="mono" style="font-size:0.75rem; color:var(--muted);">--</span>
+      <button id="btnAnalytics" class="icon-btn" title="Grafana-style Metrics & Missed Days" style="font-size:0.75rem;">[metrics]</button>
+      <button id="btnOpenTab" class="icon-btn" title="Open in Full Tab" style="font-size:0.75rem;">↗</button>
+      <button id="btnSettings" class="icon-btn" title="Settings &amp; Google Account">⚙</button>
+    </div>
+  </header>
+
+  <div class="dashboard-layout">
+    <div class="dashboard-col col-left">
+      <!-- Hero Metrics -->
+      <div class="hero">
+        <div class="hero-label">Today Balance</div>
+        <div id="heroBalance" class="hero-val mono">0.00</div>
+        <div class="hero-sub mono">
+          <span>in: <b id="subIn" style="color:var(--positive)">0.00</b></span>
+          <span>out: <b id="subOut" style="color:var(--negative)">0.00</b></span>
+          <span>week: <b id="subWeek">0.00</b></span>
+        </div>
+      </div>
+
+      <!-- Stash Card (Hidden Reserves) -->
+      <div class="stash-card">
+        <div class="stash-row">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="mono" style="font-size:0.75rem;">Stash: <b id="stashTotalDisplay">0.00</b></span>
+            <button type="button" id="btnToggleStashMask" class="feed-btn" title="Hide/reveal stash" style="padding:1px 5px; font-size:0.65rem;">Hide</button>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" id="btnStashRemaining" class="btn-mini" title="Stash today's remaining balance">Stash Balance</button>
+            <button type="button" id="btnOpenStashModal" class="btn-mini primary">+ Stash</button>
+          </div>
+        </div>
+        <div id="stashQuickList" class="stash-quick-list" style="display:none;"></div>
+      </div>
+
+      <!-- Daily Prompt (if no allowance yet today) -->
+      <div id="checkinBox" class="checkin">
+        <div class="checkin-msg">No allowance recorded today. Did you get money?</div>
+        <div class="checkin-row">
+          <button id="btnCheckin200" class="btn-mini primary">+200 School</button>
+          <button id="btnCheckinNone" class="btn-mini">None</button>
+          <button id="btnCheckinCustom" class="btn-mini">+Custom</button>
+        </div>
+      </div>
+
+      <!-- Entry Form -->
+      <div class="form-wrap">
+        <div class="mode-switch">
+          <button id="btnExp" class="mode-btn active">Expense</button>
+          <button id="btnAllow" class="mode-btn">Allowance</button>
+          <button id="btnUtang" class="mode-btn">+ Utang</button>
+        </div>
+
+        <!-- Quick Pills with Tooltips -->
+        <div class="pills-group">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em;">Quick Pills</span>
+            <button id="btnManagePills" type="button" class="feed-btn">edit pills</button>
+          </div>
+          <div id="pillsContainer" class="pills-row"></div>
+        </div>
+
+        <!-- Expense / Allowance Form -->
+        <form id="entryForm">
+          <input type="hidden" id="fType" value="Expense">
+          <div class="input-grid">
+            <input type="number" id="fAmt" step="any" placeholder="Amount" class="mono" required>
+            <select id="fCat">
+              <option value="Transportation">Transportation</option>
+              <option value="Food">Food</option>
+              <option value="Allowance">Allowance</option>
+              <option value="School">School</option>
+              <option value="Personal">Personal</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="input-grid">
+            <input type="text" id="fNote" placeholder="Note (optional)">
+            <input type="date" id="fDate" class="mono" required>
+          </div>
+          <button type="submit" id="submitBtn" class="btn-submit">Record Expense</button>
+        </form>
+
+        <!-- Utang Form -->
+        <form id="utangForm" style="display:none;">
+          <div class="input-grid">
+            <input type="text" id="uPerson" placeholder="Person name" required>
+            <select id="uDirection">
+              <option value="I Owe">I Owe Them (Utang ko)</option>
+              <option value="Owed to Me">They Owe Me (Pautang)</option>
+            </select>
+          </div>
+          <div class="input-grid">
+            <input type="number" id="uAmt" step="any" placeholder="Amount" class="mono" required>
+            <input type="date" id="uDate" class="mono" required>
+          </div>
+          <input type="text" id="uNote" placeholder="For what? (e.g. Fare, lunch)" style="margin-bottom:6px;">
+          <label id="uAffectCashRow" style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--muted); margin-bottom:8px; cursor:pointer; user-select:none;">
+            <input type="checkbox" id="uAffectCash" style="accent-color:var(--text); cursor:pointer;">
+            <span id="uAffectCashText">Add to cash balance (borrowed into wallet)</span>
+          </label>
+          <button type="submit" id="submitUtangBtn" class="btn-submit">Record Utang</button>
+        </form>
+
+        <div id="statusMsg" class="status-msg mono"></div>
+      </div>
+    </div>
+
+    <div class="dashboard-col col-right">
+      <!-- Utang Summary & Projection Hero -->
+      <div class="utang-hero">
+        <div class="utang-hero-row mono">
+          <span>I owe: <b id="uIOwe" style="color:var(--negative)">0.00</b></span>
+          <span>Owed to me: <b id="uOwedMe" style="color:var(--positive)">0.00</b></span>
+        </div>
+        <div class="utang-proj mono">
+          Pay now projection: <b id="projPayNow">0.00</b> today &middot; <b id="projWeekPay">0.00</b> week
+        </div>
+      </div>
+
+      <!-- Active Utang -->
+      <div class="section-title"><span>Active Debts (Utang)</span></div>
+      <div id="utangList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:4px 0;">No active debts</div></div>
+
+      <!-- Activity Feed -->
+      <div class="section-title">
+        <span>Recent Activity</span>
+        <span id="activityCount" class="mono" style="font-size:0.68rem; color:var(--muted);"></span>
+      </div>
+      <div id="feedList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:10px 0;">No entries yet</div></div>
+    </div>
+
+    <!-- Calendar & Millisecond Clock Column -->
+    <div class="dashboard-col col-calendar">
+      <!-- Telemetry Chronometer (Down to Milliseconds) -->
+      <div class="chrono-card">
+        <div class="chrono-top-bar">
+          <span class="mono chrono-tag">[PRECISION CHRONO]</span>
+          <span class="mono chrono-zone" id="chronoTz">LOCAL</span>
+        </div>
+        <div class="chrono-display mono">
+          <span id="chronoTime" class="chrono-hms">00:00:00</span>
+          <span id="chronoMs" class="chrono-ms">.000</span>
+        </div>
+        <div class="chrono-meta mono">
+          <span id="chronoFullDate">Monday, Sep 14, 2026</span>
+          <span id="chronoDayYear" style="color:var(--muted);">Day 257</span>
+        </div>
+      </div>
+
+      <!-- Full Interactive Calendar -->
+      <div class="calendar-card">
+        <div class="cal-nav">
+          <button type="button" id="calPrevBtn" class="feed-btn mono" title="Previous Month">&lt;</button>
+          <span id="calMonthYear" class="mono cal-month-title">September 2026</span>
+          <button type="button" id="calNextBtn" class="feed-btn mono" title="Next Month">&gt;</button>
+          <button type="button" id="calTodayBtn" class="feed-btn mono" style="margin-left:auto; font-size:0.65rem; padding:1px 5px;">[Today]</button>
+        </div>
+
+        <div class="cal-weekdays mono">
+          <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+        </div>
+
+        <div id="calDaysGrid" class="cal-days-grid mono">
+          <!-- Dynamically populated day cells -->
+        </div>
+
+        <!-- Day Inspector Detail Bar -->
+        <div id="calDayInspector" class="cal-inspector mono">
+          <div class="cal-insp-header">
+            <span id="calInspDate" style="color:var(--text); font-weight:700;">Sep 14, 2026</span>
+            <button type="button" id="calUseDateBtn" class="feed-btn action" style="font-size:0.68rem;">Use in Form</button>
+          </div>
+          <div class="cal-insp-stats">
+            <span>Spent: <b id="calInspSpent" style="color:var(--negative);">0.00</b></span>
+            <span>In: <b id="calInspIn" style="color:var(--positive);">0.00</b></span>
+            <span>Net: <b id="calInspNet">0.00</b></span>
+          </div>
+          <div id="calInspTxList" class="cal-insp-txs"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div> <!-- /.app-container -->
+
+  <!-- Edit Transaction Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>Edit Entry</span>
+        <button type="button" id="eCloseBtn" class="feed-btn">×</button>
+      </div>
+      <form id="editForm">
+        <input type="hidden" id="eId">
+        <div class="input-grid">
+          <input type="number" id="eAmt" step="any" class="mono" placeholder="Amount" required>
+          <select id="eType">
+            <option value="Expense">Expense</option>
+            <option value="Allowance">Allowance</option>
+          </select>
+        </div>
+        <div class="input-grid">
+          <select id="eCat">
+            <option value="Transportation">Transportation</option>
+            <option value="Food">Food</option>
+            <option value="Allowance">Allowance</option>
+            <option value="School">School</option>
+            <option value="Personal">Personal</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="date" id="eDate" class="mono" required>
+        </div>
+        <input type="text" id="eNote" placeholder="Note (optional)" style="margin-bottom:8px;">
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="eCancelBtn" class="btn-mini" style="flex:1;">Cancel</button>
+          <button type="submit" class="btn-mini primary" style="flex:1;">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Settle Partial / Full Modal -->
+  <div id="settleModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span id="sTitle">Record Payment</span>
+        <button type="button" id="sCloseBtn" class="feed-btn">×</button>
+      </div>
+      <div style="font-size:0.72rem; color:var(--muted); margin-bottom:10px;" id="sMeta"></div>
+      <form id="settleForm">
+        <input type="hidden" id="sId">
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <input type="number" id="sAmt" step="any" class="mono" placeholder="Amount" style="flex:1;" required>
+          <button type="button" id="sFullBtn" class="btn-mini">Full</button>
+        </div>
+        <div style="font-size:0.68rem; color:var(--muted); margin-bottom:8px;" id="sImpact"></div>
+        <label id="sAffectCashRow" style="display:flex; align-items:center; gap:6px; font-size:0.72rem; color:var(--muted); margin-bottom:12px; cursor:pointer; user-select:none;">
+          <input type="checkbox" id="sAffectCash" checked style="accent-color:var(--text); cursor:pointer;">
+          <span id="sAffectCashText">Record cash transaction</span>
+        </label>
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="sCancelBtn" class="btn-mini" style="flex:1;">Cancel</button>
+          <button type="submit" id="sSubmitBtn" class="btn-mini primary" style="flex:1;">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Manage Pills Modal -->
+  <div id="pillsModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>Manage Quick Pills</span>
+        <button type="button" id="pCloseBtn" class="feed-btn">×</button>
+      </div>
+      <form id="presetForm" style="margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+        <input type="hidden" id="pId">
+        <div class="input-grid">
+          <input type="text" id="pLabel" placeholder="Pill Label (e.g. Hwy 15)" required>
+          <input type="number" id="pAmt" step="any" placeholder="Amount" class="mono" required>
+        </div>
+        <div class="input-grid">
+          <select id="pCat">
+            <option value="Transportation">Transportation</option>
+            <option value="Food">Food</option>
+            <option value="Allowance">Allowance</option>
+            <option value="School">School</option>
+            <option value="Personal">Personal</option>
+            <option value="Other">Other</option>
+          </select>
+          <select id="pType">
+            <option value="Expense">Expense</option>
+            <option value="Allowance">Allowance</option>
+          </select>
+        </div>
+        <input type="text" id="pNote" placeholder="Hover explanation (e.g. Tricycle fare)" style="margin-bottom:6px;">
+        <button type="submit" id="pSubmitBtn" class="btn-submit" style="padding:6px;">Save Pill</button>
+      </form>
+      <div class="pill-tabs">
+        <button type="button" class="pill-tab-btn active" data-pill-filter="all">All</button>
+        <button type="button" class="pill-tab-btn" data-pill-filter="Expense">Expense</button>
+        <button type="button" class="pill-tab-btn" data-pill-filter="Allowance">Allowance</button>
+      </div>
+      <div id="pillsList" class="feed" style="margin-bottom:0;"></div>
+    </div>
+  </div>
+
+  <!-- Stash Modal -->
+  <div id="stashModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>Stash Vault (Hidden Reserves)</span>
+        <button type="button" id="stashCloseBtn" class="feed-btn">×</button>
+      </div>
+      <div style="font-size:0.7rem; color:var(--muted); margin-bottom:10px; line-height:1.4;">
+        Stashing removes money from your active daily balance so you don't spend it. When needed, click <b>Add to Finance</b> to return it to today's spendable cash.
+      </div>
+      <form id="stashForm" style="margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+        <div class="input-grid">
+          <input type="number" id="stashAmt" step="any" placeholder="Amount to stash" class="mono" required>
+          <input type="date" id="stashDate" class="mono" required>
+        </div>
+        <input type="text" id="stashNote" placeholder="For what? (e.g. Weekend reserve, Savings, Emergency)" style="margin-bottom:6px;">
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="stashCancelBtn" class="btn-mini" style="flex:1;">Cancel</button>
+          <button type="submit" id="btnSubmitStash" class="btn-mini primary" style="flex:1;">Save to Stash</button>
+        </div>
+      </form>
+      <div class="section-title"><span>Active Stashes</span></div>
+      <div id="stashModalList" class="feed" style="margin-bottom:0; max-height:160px; overflow-y:auto;">
+        <div style="font-size:0.75rem; color:var(--muted); padding:4px 0;">No active stashes</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grafana-Style Analytics & Metrics Modal -->
+  <div id="analyticsModal" class="modal">
+    <div class="modal-box grafana-modal" id="grafanaModalBox">
+      <div class="modal-title">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="mono" style="color:var(--positive); font-weight:700;">[METRICS]</span>
+          <span>Financial Telemetry &amp; Streak</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <button type="button" id="analyticsCloseBtn" class="feed-btn" title="Close (Esc)" style="font-size:1.1rem; padding:0 6px; cursor:pointer;">×</button>
+        </div>
+      </div>
+
+      <!-- Streak & Summary Banner -->
+      <div class="grafana-streak-panel">
+        <div class="streak-hero">
+          <div class="streak-val mono" id="statStreakCount" style="color:var(--positive)">0d</div>
+          <div class="streak-label">Active Streak</div>
+        </div>
+        <div class="streak-hero">
+          <div class="streak-val mono" id="statMissedDaysCount" style="color:var(--negative)">0</div>
+          <div class="streak-label">Missed (14d)</div>
+        </div>
+        <div class="streak-hero">
+          <div class="streak-val mono" id="statAvgDailySpend">0.00</div>
+          <div class="streak-label">Avg Daily Spend</div>
+        </div>
+        <div class="streak-hero">
+          <div class="streak-val mono" id="statNet14d">0.00</div>
+          <div class="streak-label">Net Cash (14d)</div>
+        </div>
+      </div>
+
+      <!-- Secondary Telemetry Meta Bar -->
+      <div class="grafana-meta-bar mono">
+        <div><span>Savings Rate:</span> <b id="statSavingsRate" style="color:var(--positive)">0%</b></div>
+        <div><span>Projected Runway:</span> <b id="statRunwayDays">--</b></div>
+        <div><span>Debt Exposure:</span> <b id="statDebtExposure">0%</b></div>
+      </div>
+
+      <!-- Main Telemetry Body (Single Column on Mobile, 2-Column on Desktop) -->
+      <div class="grafana-body-grid">
+        <!-- Left Column: Antigravity Interactive Graph & Streak Heatmap -->
+        <div class="grafana-body-col">
+          <!-- Antigravity Interactive Canvas Graph -->
+          <div class="grafana-panel" style="margin-bottom:10px;">
+            <div class="panel-header">
+              <span>CUMULATIVE BALANCE &amp; RUNWAY (ANTIGRAVITY TELEMETRY)</span>
+              <span id="canvasCurPoint" class="mono" style="font-size:0.65rem; color:var(--positive);">interactive</span>
+            </div>
+            <div style="position:relative; width:100%; height:160px; background:#070709; border:1px solid #1f1f23; border-radius:6px; overflow:hidden;">
+              <canvas id="antigravityCanvas" style="width:100%; height:100%; display:block; cursor:crosshair;"></canvas>
+              <div id="canvasHudTooltip" style="display:none; position:absolute; pointer-events:none; background:rgba(18,18,21,0.95); border:1px solid #3f3f46; border-radius:4px; padding:4px 8px; font-size:0.68rem; font-family:monospace; color:#f4f4f5; box-shadow:0 6px 18px rgba(0,0,0,0.6); z-index:10; white-space:nowrap;"></div>
+            </div>
+          </div>
+
+          <!-- Missed Days Heatmap Grid -->
+          <div class="grafana-panel">
+            <div class="panel-header">
+              <span>LOGGING INTEGRITY &amp; MISSED DAYS (LAST 14 DAYS)</span>
+              <span id="streakStatusPill" class="mono" style="font-size:0.65rem; color:var(--positive);">100% active</span>
+            </div>
+            <div id="missedDaysGrid" class="days-grid"></div>
+            <div id="missedDaysAlert" style="font-size:0.68rem; color:var(--muted); line-height:1.3; margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <!-- Right Column: Cash Flow, Category Breakdown & Audit Trail -->
+        <div class="grafana-body-col">
+          <!-- Cash Flow Trend Chart -->
+          <div class="grafana-panel">
+            <div class="panel-header">
+              <span>DAILY CASH FLOW (LAST 7 DAYS)</span>
+              <div style="display:flex; gap:8px; font-size:0.65rem;">
+                <span style="color:var(--positive)">■ In</span>
+                <span style="color:var(--negative)">■ Out</span>
+              </div>
+            </div>
+            <div id="cashFlowChart" style="margin-top:4px;"></div>
+          </div>
+
+          <!-- Category Telemetry Breakdown -->
+          <div class="grafana-panel">
+            <div class="panel-header">
+              <span>EXPENSE SPENDING DISTRIBUTION</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <div style="display:flex; gap:2px;">
+                  <button type="button" id="btnCat14d" class="cat-tab-btn active">14d</button>
+                  <button type="button" id="btnCatAll" class="cat-tab-btn">All</button>
+                </div>
+                <span id="catTotalLabel" class="mono" style="font-size:0.65rem; color:var(--negative);"></span>
+              </div>
+            </div>
+            <div id="categoryBreakdownList" class="cat-breakdown-list"></div>
+          </div>
+
+          <!-- Audit Trail & Edit Logs -->
+          <div class="grafana-panel" style="margin-bottom:0;">
+            <div class="panel-header">
+              <span>AUDIT TRAIL &amp; EDIT LOGS</span>
+              <span id="auditCountLabel" class="mono" style="font-size:0.65rem; color:var(--muted);">0 events</span>
+            </div>
+            <div id="auditLogList" class="audit-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings & Google Sync Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span>Storage &amp; Google Sync</span>
+        <button type="button" id="cfgCloseBtn" class="feed-btn">×</button>
+      </div>
+
+      <!-- Google Account Status Card -->
+      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:10px; margin-bottom:12px;">
+        <div style="font-size:0.72rem; color:var(--muted); margin-bottom:4px;">Google Account</div>
+        <div id="googleUserDisplay" style="font-size:0.8rem; font-weight:600; margin-bottom:8px;">Not connected (Offline Store)</div>
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="btnGoogleLogin" class="btn-mini primary" style="flex:1;">Connect Google</button>
+          <button type="button" id="btnGoogleLogout" class="btn-mini" style="display:none;">Sign Out</button>
+        </div>
+      </div>
+
+      <!-- Sync Queue & Actions -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; padding:0 2px;">
+        <span id="queueCountLabel" class="mono" style="font-size:0.7rem; color:var(--muted);">Pending sync: 0</span>
+        <div style="display:flex; gap:6px;">
+          <button type="button" id="btnPullCloud" class="btn-mini">Pull from Cloud</button>
+          <button type="button" id="btnManualSync" class="btn-mini">Sync Now</button>
+        </div>
+      </div>
+
+      <!-- Financial Rollover Option -->
+      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:8px 10px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-size:0.75rem; font-weight:600;">Daily Balance Rollover</div>
+          <div style="font-size:0.68rem; color:var(--muted);">Carry over unspent balance from yesterday into today</div>
+        </div>
+        <input type="checkbox" id="cfgRollover" style="cursor:pointer; width:16px; height:16px;">
+      </div>
+
+      <form id="settingsForm">
+        <label style="font-size:0.7rem; color:var(--muted); margin-bottom:2px; display:block;">Extension Redirect URI (Add this to Google Cloud Console)</label>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <input type="text" id="cfgRedirectUri" readonly style="font-size:0.68rem; flex:1; background:#18181b; color:#a1a1aa; padding:4px 6px;">
+          <button type="button" id="btnCopyRedirectUri" class="btn-mini">Copy</button>
+        </div>
+
+        <label style="font-size:0.7rem; color:var(--muted); margin-bottom:2px; display:block;">OAuth 2.0 Client ID (Paste from Google Cloud)</label>
+        <input type="text" id="cfgClientId" placeholder="Google Cloud OAuth Client ID" style="margin-bottom:8px;">
+
+        <label style="font-size:0.7rem; color:var(--muted); margin-bottom:2px; display:block;">Google Sheet Link or ID (Optional)</label>
+        <input type="text" id="cfgSheet" placeholder="Leave empty to auto-create sheet in Drive" style="margin-bottom:4px;">
+        <div style="font-size:0.68rem; color:var(--muted); margin-bottom:12px; line-height:1.3;">
+          If left empty, a sheet named "Personal Finance Ledger" is automatically created in your Google Drive on first sync.
+        </div>
+
+        <div style="display:flex; gap:6px; margin-bottom:10px;">
+          <button type="button" id="cfgCancelBtn" class="btn-mini" style="flex:1;">Close</button>
+          <button type="submit" class="btn-mini primary" style="flex:1;">Save Settings</button>
+        </div>
+      </form>
+
+      <!-- System Self-Test & Diagnostic Check -->
+      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:10px; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:600;">System Self-Test</div>
+            <div style="font-size:0.68rem; color:var(--muted);">Verify math, decimals, vault, debts &amp; sync</div>
+          </div>
+          <button type="button" id="btnRunDiagnostics" class="btn-mini">Run Test</button>
+        </div>
+        <div id="diagnosticsOutput" class="mono" style="display:none; font-size:0.66rem; background:#141417; border:1px solid var(--border); border-radius:4px; padding:8px; margin-top:8px; line-height:1.4; max-height:130px; overflow-y:auto;"></div>
+      </div>
+
+      <!-- Fresh Account Reset Card -->
+      <div style="background:#140c0e; border:1px solid rgba(244,63,94,0.3); border-radius:6px; padding:10px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-size:0.75rem; font-weight:600; color:var(--negative);">Clear All Data (Fresh Account)</div>
+            <div style="font-size:0.68rem; color:var(--muted);">Wipe all entries, debts, stashes &amp; reset streak</div>
+          </div>
+          <button type="button" id="btnClearAllData" class="btn-mini" style="background:#271217; border-color:rgba(244,63,94,0.4); color:var(--negative); font-weight:600;">Clear All</button>
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--border); padding-top:8px; display:flex; justify-content:space-between;">
+        <button type="button" id="btnExportData" class="feed-btn">Export Local Backup (JSON)</button>
+        <button type="button" id="btnClearData" class="feed-btn del">Reset Local Data</button>
+      </div>
+    </div>
+  <!-- Close Window Confirm Dialog (Esc when not in metrics) -->
+  <div id="closeConfirmModal" class="modal" style="display:none; z-index:999; background:rgba(8,8,10,0.55); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);">
+    <div class="modal-box" id="closeConfirmBox" style="max-width:340px; text-align:center; padding:18px 20px; background:rgba(18,18,22,0.92); border:1px solid rgba(255,255,255,0.12); border-radius:12px; box-shadow:0 16px 40px rgba(0,0,0,0.8);">
+      <div style="font-size:0.85rem; font-weight:700; margin-bottom:6px; color:var(--text);">Close Window?</div>
+      <div style="font-size:0.72rem; color:var(--muted); margin-bottom:14px; line-height:1.4;">
+        Press <span class="mono" style="color:var(--text); background:#27272a; padding:1px 5px; border-radius:3px;">Esc</span> again to close this window, or click anywhere to dismiss.
+      </div>
+      <div style="display:flex; gap:8px;">
+        <button type="button" id="btnCancelCloseWindow" class="btn-mini" style="flex:1; padding:6px 0;">Cancel</button>
+        <button type="button" id="btnConfirmCloseWindow" class="btn-mini primary" style="flex:1; padding:6px 0; background:var(--negative); color:#fff;">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="google_sync.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
