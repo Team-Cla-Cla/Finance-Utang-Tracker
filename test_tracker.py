@@ -90,6 +90,7 @@ def test_extension_bundle():
     assert 'id="syncBadge"' in html, "syncBadge missing"
     assert 'id="btnGoogleLogin"' in html, "btnGoogleLogin missing"
     assert 'id="btnAnalytics"' in html, "btnAnalytics missing"
+    assert 'id="btnToggleFontSize"' in html, "btnToggleFontSize missing"
     assert 'id="analyticsModal"' in html, "analyticsModal missing"
     assert 'class="empty-pills-hint"' in html or 'empty-pills-hint' in html, "empty-pills-hint missing"
     assert 'class="pill-tabs"' in html, "pill-tabs missing"
