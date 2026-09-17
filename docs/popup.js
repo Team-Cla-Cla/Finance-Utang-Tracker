@@ -22,6 +22,7 @@ let appState = {
   stashMasked: false,
   dailyRollover: false,
   largeFont: false,
+  disableBgAnimation: null,
   installDate: null,
   auditLog: [],
   syncQueue: [],
@@ -41,7 +42,7 @@ let isSyncing = false;
 // --- Storage & Initialization ---
 function loadLocalState(callback) {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-    chrome.storage.local.get(["transactions", "debts", "presets", "stashes", "stashMasked", "dailyRollover", "largeFont", "installDate", "auditLog", "syncQueue", "googleAuth"], function(res) {
+    chrome.storage.local.get(["transactions", "debts", "presets", "stashes", "stashMasked", "dailyRollover", "largeFont", "disableBgAnimation", "installDate", "auditLog", "syncQueue", "googleAuth"], function(res) {
       if (res.transactions) appState.transactions = res.transactions;
       if (res.debts) appState.debts = res.debts;
       if (res.presets) appState.presets = res.presets;
@@ -49,6 +50,7 @@ function loadLocalState(callback) {
       if (typeof res.stashMasked === "boolean") appState.stashMasked = res.stashMasked;
       if (typeof res.dailyRollover === "boolean") appState.dailyRollover = res.dailyRollover;
       if (typeof res.largeFont === "boolean") appState.largeFont = res.largeFont;
+      if (typeof res.disableBgAnimation === "boolean") appState.disableBgAnimation = res.disableBgAnimation;
       if (res.installDate) appState.installDate = res.installDate;
       if (!appState.installDate) {
         appState.installDate = getLocalDateStr();
@@ -68,6 +70,7 @@ function loadLocalState(callback) {
     const sm = localStorage.getItem("stashMasked");
     const ro = localStorage.getItem("dailyRollover");
     const lf = localStorage.getItem("largeFont");
+    const da = localStorage.getItem("disableBgAnimation");
     const idt = localStorage.getItem("installDate");
     const al = localStorage.getItem("auditLog");
     const q = localStorage.getItem("syncQueue");
@@ -79,6 +82,7 @@ function loadLocalState(callback) {
     if (sm) appState.stashMasked = JSON.parse(sm);
     if (ro) appState.dailyRollover = JSON.parse(ro);
     if (lf) appState.largeFont = JSON.parse(lf);
+    if (da !== null && da !== undefined) appState.disableBgAnimation = JSON.parse(da);
     if (idt) appState.installDate = JSON.parse(idt);
     if (!appState.installDate) {
       appState.installDate = getLocalDateStr();
@@ -101,6 +105,7 @@ function persistState() {
       stashMasked: appState.stashMasked,
       dailyRollover: appState.dailyRollover,
       largeFont: appState.largeFont,
+      disableBgAnimation: appState.disableBgAnimation,
       installDate: appState.installDate,
       auditLog: appState.auditLog,
       syncQueue: appState.syncQueue,
@@ -114,6 +119,7 @@ function persistState() {
     localStorage.setItem("stashMasked", JSON.stringify(appState.stashMasked));
     localStorage.setItem("dailyRollover", JSON.stringify(appState.dailyRollover));
     localStorage.setItem("largeFont", JSON.stringify(appState.largeFont));
+    localStorage.setItem("disableBgAnimation", JSON.stringify(appState.disableBgAnimation));
     localStorage.setItem("installDate", JSON.stringify(appState.installDate));
     localStorage.setItem("auditLog", JSON.stringify(appState.auditLog));
     localStorage.setItem("syncQueue", JSON.stringify(appState.syncQueue));
@@ -1241,6 +1247,7 @@ function createOrb(x, y, customSpeed = null, customHue = null) {
 }
 
 function spawnOrbInNextSpace(clickX, clickY) {
+  if (!shouldRunBgAnimation()) return;
   const w = window.innerWidth || 800;
   const h = window.innerHeight || 600;
 
@@ -1305,12 +1312,13 @@ function resetOrbIdleTimer() {
 
 // Global cursor tracking across the entire window for the background canvas
 window.addEventListener("mousemove", (e) => {
+  if (!shouldRunBgAnimation()) return;
   globalMouse.x = e.clientX;
   globalMouse.y = e.clientY;
   globalMouse.active = true;
   resetOrbIdleTimer();
   wakeBackgroundLoop();
-});
+}, { passive: true });
 
 window.addEventListener("mouseleave", () => {
   globalMouse.active = false;
@@ -2093,7 +2101,59 @@ function drawTelemetryChart(canvas) {
   ctx.restore();
 }
 
+function isExtensionPopupMode() {
+  const isExtProtocol = typeof window !== "undefined" && window.location &&
+    (window.location.protocol === "chrome-extension:" || window.location.protocol === "moz-extension:");
+  const isFullTab = typeof window !== "undefined" && window.location &&
+    (window.location.search.includes("tab=1") || window.innerWidth >= 840);
+  return isExtProtocol && !isFullTab;
+}
+
+function shouldRunBgAnimation() {
+  if (typeof appState !== "undefined" && typeof appState.disableBgAnimation === "boolean") {
+    return !appState.disableBgAnimation;
+  }
+  // Default: Off in 380px extension popup for buttery smooth 0ms UI latency; On in full tab & website
+  return !isExtensionPopupMode();
+}
+
+function drawStaticBackground(canvas) {
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = window.innerWidth || document.documentElement.clientWidth || 380;
+  const h = window.innerHeight || document.documentElement.clientHeight || 590;
+
+  if (w < 10 || h < 10) return;
+
+  canvas.width = Math.floor(w * dpr);
+  canvas.height = Math.floor(h * dpr);
+
+  ctx.save();
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, w, h);
+
+  // Clean, zero-CPU dark matrix for extension mode
+  const spacing = 18;
+  ctx.fillStyle = "rgba(161, 161, 170, 0.08)";
+  for (let x = spacing / 2; x < w; x += spacing) {
+    for (let y = spacing / 2; y < h; y += spacing) {
+      ctx.beginPath();
+      ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
 function renderBackgroundLoop() {
+  if (!shouldRunBgAnimation()) {
+    const bgCanvas = document.getElementById("bgCanvas");
+    if (bgCanvas) drawStaticBackground(bgCanvas);
+    bgAnimationId = null;
+    return;
+  }
+
   const bgCanvas = document.getElementById("bgCanvas");
   let anyMoving = false;
   if (bgCanvas) {
@@ -2116,6 +2176,11 @@ function renderBackgroundLoop() {
 }
 
 function wakeBackgroundLoop() {
+  if (!shouldRunBgAnimation()) {
+    const bgCanvas = document.getElementById("bgCanvas");
+    if (bgCanvas) drawStaticBackground(bgCanvas);
+    return;
+  }
   if (!bgAnimationId) {
     bgAnimationId = requestAnimationFrame(renderBackgroundLoop);
   }
@@ -3286,6 +3351,8 @@ function setupEventListeners() {
       if (cfgS && typeof appState !== "undefined") cfgS.value = (appState.googleAuth && appState.googleAuth.spreadsheetId) || "";
       const roCheck = document.getElementById("cfgRollover");
       if (roCheck && typeof appState !== "undefined") roCheck.checked = !!appState.dailyRollover;
+      const animCheck = document.getElementById("cfgDisableAnimation");
+      if (animCheck && typeof appState !== "undefined") animCheck.checked = !shouldRunBgAnimation();
       const redirectInput = document.getElementById("cfgRedirectUri");
       if (redirectInput && typeof GoogleSync !== "undefined" && GoogleSync.getRedirectUri) {
         redirectInput.value = GoogleSync.getRedirectUri();
@@ -3338,6 +3405,21 @@ function setupEventListeners() {
     });
   }
 
+  const cfgDisableAnim = document.getElementById("cfgDisableAnimation");
+  if (cfgDisableAnim) {
+    cfgDisableAnim.addEventListener("change", () => {
+      appState.disableBgAnimation = cfgDisableAnim.checked;
+      persistState();
+      if (appState.disableBgAnimation) {
+        const bgCanvas = document.getElementById("bgCanvas");
+        if (bgCanvas) drawStaticBackground(bgCanvas);
+        bgAnimationId = null;
+      } else {
+        wakeBackgroundLoop();
+      }
+    });
+  }
+
   document.getElementById("cfgCloseBtn").addEventListener("click", () => {
     document.getElementById("settingsModal").style.display = "none";
   });
@@ -3352,6 +3434,17 @@ function setupEventListeners() {
     appState.googleAuth.spreadsheetId = GoogleSync.extractSpreadsheetId(document.getElementById("cfgSheet").value.trim());
     const roCheck = document.getElementById("cfgRollover");
     if (roCheck) appState.dailyRollover = roCheck.checked;
+    const animCheck = document.getElementById("cfgDisableAnimation");
+    if (animCheck) {
+      appState.disableBgAnimation = animCheck.checked;
+      if (appState.disableBgAnimation) {
+        const bgCanvas = document.getElementById("bgCanvas");
+        if (bgCanvas) drawStaticBackground(bgCanvas);
+        bgAnimationId = null;
+      } else {
+        wakeBackgroundLoop();
+      }
+    }
     persistState();
     renderUI();
     document.getElementById("settingsModal").style.display = "none";

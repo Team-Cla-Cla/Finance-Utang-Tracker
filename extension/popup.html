@@ -1222,12 +1222,21 @@
       </div>
 
       <!-- Financial Rollover Option -->
-      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:8px 10px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:8px 10px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
         <div>
           <div style="font-size:0.75rem; font-weight:600;">Daily Balance Rollover</div>
           <div style="font-size:0.68rem; color:var(--muted);">Carry over unspent balance from yesterday into today</div>
         </div>
         <input type="checkbox" id="cfgRollover" style="cursor:pointer; width:16px; height:16px;">
+      </div>
+
+      <!-- Performance & Animation Option -->
+      <div style="background:#09090b; border:1px solid var(--border); border-radius:6px; padding:8px 10px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-size:0.75rem; font-weight:600;">Disable Live Background Animation</div>
+          <div style="font-size:0.68rem; color:var(--muted);">Zero CPU mode for ultra-smooth, instant performance (default in popup)</div>
+        </div>
+        <input type="checkbox" id="cfgDisableAnimation" style="cursor:pointer; width:16px; height:16px;">
       </div>
 
       <form id="settingsForm">
@@ -1294,7 +1303,7 @@
     </div>
   </div>
 
-  <script src="google_sync.js?v=2.3.1"></script>
-  <script src="popup.js?v=2.3.1"></script>
+  <script src="google_sync.js?v=2.3.2"></script>
+  <script src="popup.js?v=2.3.2"></script>
 </body>
 </html>
