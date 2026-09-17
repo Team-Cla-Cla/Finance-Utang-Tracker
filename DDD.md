@@ -95,7 +95,7 @@ flowchart TD
 
     subgraph Analytics & Telemetry Context
         TelemetryEngine[Grafana-Style Analytics Engine]
-        BiomorphicCanvas[Antigravity CA Visualizer]
+        BiomorphicCanvas[Interactive Cellular Matrix Visualizer]
     end
 
     DebtManager -->|Domain Event: DebtSettlementApplied| DailyLedger

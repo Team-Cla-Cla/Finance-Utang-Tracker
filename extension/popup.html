@@ -30,8 +30,8 @@
     html { width: 380px; box-sizing: border-box; margin: 0; padding: 0; background: #08080a; }
     body { background: transparent; color: var(--text); padding: 14px; width: 380px; min-width: 380px; max-width: 380px; box-sizing: border-box; max-height: 590px; overflow-x: hidden; overflow-y: auto; margin: 0; position: relative; }
     
-    /* Antigravity Global Canvas */
-    #antigravityBgCanvas {
+    /* Dynamic Background Canvas */
+    #bgCanvas {
       position: fixed;
       top: 0;
       left: 0;
@@ -597,8 +597,8 @@
   </style>
 </head>
 <body>
-  <!-- Fullscreen Interactive Antigravity Circle Grid Canvas -->
-  <canvas id="antigravityBgCanvas"></canvas>
+  <!-- Fullscreen Interactive Circle Matrix Canvas -->
+  <canvas id="bgCanvas"></canvas>
 
   <div class="app-container">
     <header>
@@ -964,16 +964,16 @@
 
       <!-- Main Telemetry Body (Single Column on Mobile, 2-Column on Desktop) -->
       <div class="grafana-body-grid">
-        <!-- Left Column: Antigravity Interactive Graph & Streak Heatmap -->
+        <!-- Left Column: Interactive Graph & Streak Heatmap -->
         <div class="grafana-body-col">
-          <!-- Antigravity Interactive Canvas Graph -->
+          <!-- Interactive Financial Canvas Graph -->
           <div class="grafana-panel" style="margin-bottom:10px;">
             <div class="panel-header">
-              <span>CUMULATIVE BALANCE &amp; RUNWAY (ANTIGRAVITY TELEMETRY)</span>
+              <span>CUMULATIVE BALANCE &amp; RUNWAY</span>
               <span id="canvasCurPoint" class="mono" style="font-size:0.65rem; color:var(--positive);">interactive</span>
             </div>
             <div style="position:relative; width:100%; height:160px; background:#070709; border:1px solid #1f1f23; border-radius:6px; overflow:hidden;">
-              <canvas id="antigravityCanvas" style="width:100%; height:100%; display:block; cursor:crosshair;"></canvas>
+              <canvas id="telemetryCanvas" style="width:100%; height:100%; display:block; cursor:crosshair;"></canvas>
               <div id="canvasHudTooltip" style="display:none; position:absolute; pointer-events:none; background:rgba(18,18,21,0.95); border:1px solid #3f3f46; border-radius:4px; padding:4px 8px; font-size:0.68rem; font-family:monospace; color:#f4f4f5; box-shadow:0 6px 18px rgba(0,0,0,0.6); z-index:10; white-space:nowrap;"></div>
             </div>
           </div>
