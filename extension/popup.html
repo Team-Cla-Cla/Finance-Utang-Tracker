@@ -771,9 +771,9 @@
       <div class="header-actions">
         <span id="dateLabel" class="mono">--</span>
         <button id="btnToggleFontSize" class="icon-btn" title="Toggle Larger Font Size" style="font-weight:600;">A+</button>
-        <button id="btnAnalytics" class="icon-btn" title="Metrics &amp; Missed Days">📊</button>
+        <button id="btnAnalytics" class="icon-btn" title="Metrics &amp; Missed Days" onclick="openAnalyticsModal()">📊</button>
         <button id="btnOpenTab" class="icon-btn" title="Open in Full Tab">↗</button>
-        <button id="btnSettings" class="icon-btn" title="Settings &amp; Google Account">⚙</button>
+        <button id="btnSettings" class="icon-btn" title="Settings &amp; Google Account" onclick="openSettingsModal()">⚙</button>
       </div>
     </header>
 
@@ -1199,7 +1199,7 @@
     <div class="modal-box">
       <div class="modal-title">
         <span>Storage &amp; Google Sync</span>
-        <button type="button" id="cfgCloseBtn" class="feed-btn">×</button>
+        <button type="button" id="cfgCloseBtn" class="feed-btn" onclick="closeSettingsModal()">×</button>
       </div>
 
       <!-- Google Account Status Card -->
@@ -1247,7 +1247,7 @@
         </div>
 
         <div style="display:flex; gap:6px; margin-bottom:10px;">
-          <button type="button" id="cfgCancelBtn" class="btn-mini" style="flex:1;">Close</button>
+          <button type="button" id="cfgCancelBtn" class="btn-mini" style="flex:1;" onclick="closeSettingsModal()">Close</button>
           <button type="submit" class="btn-mini primary" style="flex:1;">Save Settings</button>
         </div>
       </form>
@@ -1294,7 +1294,7 @@
     </div>
   </div>
 
-  <script src="google_sync.js"></script>
-  <script src="popup.js"></script>
+  <script src="google_sync.js?v=2.3.1"></script>
+  <script src="popup.js?v=2.3.1"></script>
 </body>
 </html>

@@ -3079,6 +3079,8 @@ function setupEventListeners() {
     document.body.classList.remove("metrics-expanded");
     wakeBackgroundLoop();
   }
+  window.openAnalyticsModal = openAnalyticsModal;
+  window.closeAnalyticsModal = closeAnalyticsModal;
 
   const btnAnalytics = document.getElementById("btnAnalytics");
   if (btnAnalytics) {
@@ -3275,28 +3277,37 @@ function setupEventListeners() {
     });
   });
 
+  function openSettingsModal() {
+    try {
+      if (typeof updateGoogleStatusUI === "function") updateGoogleStatusUI();
+      const cfgC = document.getElementById("cfgClientId");
+      if (cfgC && typeof appState !== "undefined") cfgC.value = (appState.googleAuth && appState.googleAuth.clientId) || "";
+      const cfgS = document.getElementById("cfgSheet");
+      if (cfgS && typeof appState !== "undefined") cfgS.value = (appState.googleAuth && appState.googleAuth.spreadsheetId) || "";
+      const roCheck = document.getElementById("cfgRollover");
+      if (roCheck && typeof appState !== "undefined") roCheck.checked = !!appState.dailyRollover;
+      const redirectInput = document.getElementById("cfgRedirectUri");
+      if (redirectInput && typeof GoogleSync !== "undefined" && GoogleSync.getRedirectUri) {
+        redirectInput.value = GoogleSync.getRedirectUri();
+      }
+    } catch (err) {
+      console.warn("Settings init note:", err);
+    }
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.style.display = "flex";
+  }
+  window.openSettingsModal = openSettingsModal;
+
+  function closeSettingsModal() {
+    const modal = document.getElementById("settingsModal");
+    if (modal) modal.style.display = "none";
+  }
+  window.closeSettingsModal = closeSettingsModal;
+
   // Settings & Sync Modal
   const btnSettings = document.getElementById("btnSettings");
   if (btnSettings) {
-    btnSettings.addEventListener("click", () => {
-      try {
-        updateGoogleStatusUI();
-        const cfgC = document.getElementById("cfgClientId");
-        if (cfgC) cfgC.value = (appState.googleAuth && appState.googleAuth.clientId) || "";
-        const cfgS = document.getElementById("cfgSheet");
-        if (cfgS) cfgS.value = (appState.googleAuth && appState.googleAuth.spreadsheetId) || "";
-        const roCheck = document.getElementById("cfgRollover");
-        if (roCheck) roCheck.checked = !!appState.dailyRollover;
-        const redirectInput = document.getElementById("cfgRedirectUri");
-        if (redirectInput && typeof GoogleSync !== "undefined" && GoogleSync.getRedirectUri) {
-          redirectInput.value = GoogleSync.getRedirectUri();
-        }
-      } catch (err) {
-        console.warn("Settings init note:", err);
-      }
-      const modal = document.getElementById("settingsModal");
-      if (modal) modal.style.display = "flex";
-    });
+    btnSettings.addEventListener("click", openSettingsModal);
   }
 
   const btnCopyUri = document.getElementById("btnCopyRedirectUri");
