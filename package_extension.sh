@@ -10,4 +10,7 @@ cd "${SCRIPT_DIR}/extension"
 zip -r -FS "${OUTPUT_XPI}" * -x "*.git*" -x "*DS_Store*"
 
 echo "[+] Successfully created: ${OUTPUT_XPI}"
+OUTPUT_ZIP="${SCRIPT_DIR}/finance-utang-tracker.zip"
+cp -f "${OUTPUT_XPI}" "${OUTPUT_ZIP}"
+echo "[+] Successfully created: ${OUTPUT_ZIP}"
 echo "[*] Permanent Firefox ID: finance-utang-tracker@ryme.local"
