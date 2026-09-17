@@ -1,0 +1,10 @@
+{
+  "policies": {
+    "ExtensionSettings": {
+      "finance-utang-tracker@ryme.local": {
+        "installation_mode": "normal_installed",
+        "install_url": "file:///home/ryme/Personal/Finance/finance-utang-tracker@ryme.local.xpi"
+      }
+    }
+  }
+}
