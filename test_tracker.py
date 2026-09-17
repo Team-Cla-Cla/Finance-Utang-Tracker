@@ -105,7 +105,7 @@ def test_extension_bundle():
     assert 'id="btnCat14d"' in html, "btnCat14d missing"
     assert 'id="btnCatAll"' in html, "btnCatAll missing"
     assert 'id="catTotalLabel"' in html, "catTotalLabel missing"
-    assert 'id="antigravityCanvas"' in html, "antigravityCanvas missing"
+    assert 'id="telemetryCanvas"' in html, "telemetryCanvas missing"
     assert 'id="canvasHudTooltip"' in html, "canvasHudTooltip missing"
     assert 'id="analyticsCloseBtn"' in html, "analyticsCloseBtn missing"
     assert 'id="statSavingsRate"' in html, "statSavingsRate missing"
@@ -439,9 +439,8 @@ def test_sync_queue_and_two_way_operations():
 
 
 def main():
-    print("=" * 60)
-    print("RUNNING AUTOMATED TEST SUITE (OFFLINE-FIRST ARCHITECTURE)")
-    print("=" * 60)
+    print("Running project test suite...")
+    print("-" * 50)
     test_js_syntax()
     test_python_syntax()
     test_decimal_and_integer_precision()
@@ -453,9 +452,8 @@ def main():
     test_missed_days_anchor_and_rollover()
     test_formula_sanitization_and_debt_validation()
     test_extension_bundle()
-    print("=" * 60)
-    print("ALL TESTS PASSED (100% OPERATIONAL)")
-    print("=" * 60)
+    print("-" * 50)
+    print("All tests passed successfully.")
 
 
 if __name__ == "__main__":

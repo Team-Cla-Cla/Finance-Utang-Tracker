@@ -112,7 +112,7 @@ The tracker distinguishes between **borrowed money** and **lent money**, with op
 ### 2.6 Desktop Dashboard Layout (85% Screen)
 * **Semi-Fullscreen Architecture**:
   - On desktop (`>= 840px`), the container locks to `85vw` width and `85vh` height, centered both horizontally and vertically.
-  - 7.5% margins expose the interactive Antigravity canvas on all four sides.
+  - 7.5% margins expose the interactive background canvas on all four sides.
 * **Three Functional Columns**:
   1. **Left Column (`360px`)**: Today's Balance, Stash Vault, Check-in Banner, Expense/Utang Forms, Quick Pills.
   2. **Middle Column (`minmax(320px, 1fr)`)**: Debt Summary & Projections, Active Debt List, Scrollable Recent Activity Feed.
@@ -120,18 +120,21 @@ The tracker distinguishes between **borrowed money** and **lent money**, with op
 
 ---
 
-### 2.7 Antigravity Interactive Background & Telemetry HUD
+### 2.7 Interactive Background Matrix & Analytics HUD
 * **50% Transparent Glassmorphism**:
   - Dashboard container and metrics cards use `rgba(12, 12, 16, 0.50)` with `backdrop-filter: blur(8px)`.
   - The reactive particle grid shines directly through the cards and around their borders.
-* **2x Cursor Repulsion Physics**:
+* **Ambient Floating Light Orbs (6 Distributed Spaces)**:
+  - Up to 6 distinct glowing orbs wander across 6 evenly distributed spatial zones of the viewport.
+  - Clicking any action button cycles spawn points across the 6 zones with gentle harmonic drift, smooth boundary deflection, and dynamic breathing radii.
+* **Cursor Repulsion Physics & Conway's Cellular Automaton**:
   - **Influence Radius**: `270px` deflection circle centered at cursor position.
   - **Ambient Spotlight Glow**: `350px` radial gradient illuminating nearby dots.
-  - Dots deflect smoothly using spring damping physics, expand from `1.45px` to `4.8px`, and light up in emerald (`#10b981`) and electric cyan (`#38bdf8`) with halo pulse rings.
-* **Metrics Modal (Financial Telemetry & Streak)**:
+  - Interactive matrix dots deflect smoothly using spring damping physics and ignite cells in the background cellular grid.
+* **Metrics Modal (Financial Analytics & Streak)**:
   - Pressing `` ` `` (backtick) or clicking `[metrics]` opens the 85% semi-fullscreen HUD.
   - The underlying dashboard is automatically hidden while metrics is active to prevent ghosting.
-  - 2-column telemetry grid:
+  - 2-column analytics grid:
     - *Left*: Cumulative Balance & Runway interactive canvas graph + 14-day Missed Days Grid.
     - *Right*: Daily Cash Flow (In vs Out 7-day bars) + Category Spending Distribution (14d/All) + Real-time Audit Trail & Edit Logs.
 

@@ -1180,29 +1180,40 @@ function logAudit(event) {
   persistState();
 }
 
-// --- Antigravity-Style Interactive Background Circle Grid & Telemetry ---
-let antigravityCanvasInited = false;
-let agAnimationId = null;
-const agMouse = { x: -1000, y: -1000, active: false };
-const globalBgMouse = { x: -1000, y: -1000, active: false };
-let agParticles = [];
-let agDataPoints = [];
+// --- Interactive Background Grid & Ambient Orb Dynamics ---
+let telemetryCanvasInited = false;
+let bgAnimationId = null;
+const bgMouse = { x: -1000, y: -1000, active: false };
+const globalMouse = { x: -1000, y: -1000, active: false };
+let bgParticles = [];
+let chartDataPoints = [];
 let bgDots = [];
 let bgGridW = 0;
 let bgGridH = 0;
 
-// Autonomous "Bioluminescent Organisms" Living Entity Ecosystem
-let activeOrganisms = [];
-const MAX_ORGANISMS = 10;
-let organismIdCounter = 0;
-let lastOrganismTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+// Ambient Floating Light Orbs (Capped to maximum 6, distributed evenly across 6 distinct screen zones)
+let activeOrbs = [];
+const MAX_ORBS = 6;
+let orbIdCounter = 0;
+let orbSpawnSlotIndex = 0;
+let lastOrbTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
 
-function createOrganism(x, y, customSpeed = null, customHue = null) {
+// 6 evenly distributed spatial zones across the viewport
+const ORB_SPACES = [
+  { xRatio: 0.18, yRatio: 0.22, name: "top-left" },
+  { xRatio: 0.50, yRatio: 0.18, name: "top-center" },
+  { xRatio: 0.82, yRatio: 0.22, name: "top-right" },
+  { xRatio: 0.82, yRatio: 0.78, name: "bottom-right" },
+  { xRatio: 0.50, yRatio: 0.82, name: "bottom-center" },
+  { xRatio: 0.18, yRatio: 0.78, name: "bottom-left" }
+];
+
+function createOrb(x, y, customSpeed = null, customHue = null) {
   const angle = Math.random() * Math.PI * 2;
-  const spd = customSpeed || (1.4 + Math.random() * 0.9);
-  const hue = (customHue !== null) ? customHue : (organismIdCounter % 3);
+  const spd = customSpeed || (1.3 + Math.random() * 0.8);
+  const hue = (customHue !== null) ? customHue : (orbIdCounter % 6);
   return {
-    id: ++organismIdCounter,
+    id: ++orbIdCounter,
     x: x,
     y: y,
     vx: Math.cos(angle) * spd,
@@ -1210,135 +1221,144 @@ function createOrganism(x, y, customSpeed = null, customHue = null) {
     angle: angle,
     speed: spd,
     breathPhase: Math.random() * Math.PI * 2,
-    breathSpeed: (Math.PI * 2) / (2.6 + Math.random() * 1.2), // Period 2.6s - 3.8s
+    breathSpeed: (Math.PI * 2) / (2.6 + Math.random() * 1.2),
     baseInfluenceR: 220 + Math.random() * 50,
     baseSpotR: 300 + Math.random() * 70,
     currentInfluenceR: 220,
     currentSpotR: 300,
     currentBSin: 0,
-    hueType: hue, // 0: Emerald, 1: Electric Cyan, 2: Deep Aqua
+    hueType: hue, // 0..5: Emerald, Cyan, Teal, Amber Gold, Violet, Rose
     alpha: 0.1,
     targetAlpha: 1.0,
     lastSeedTime: 0
   };
 }
 
-function spawnOrganismAt(x, y) {
+function spawnOrbInNextSpace(clickX, clickY) {
   const w = window.innerWidth || 800;
   const h = window.innerHeight || 600;
-  const spawnX = Math.max(30, Math.min(w - 30, x));
-  const spawnY = Math.max(30, Math.min(h - 30, y));
 
-  if (activeOrganisms.length >= MAX_ORGANISMS) {
-    activeOrganisms.shift(); // Retire oldest organism to keep performance optimal
+  // Cycle through the 6 evenly spaced zones across the screen
+  const slot = ORB_SPACES[orbSpawnSlotIndex % MAX_ORBS];
+  orbSpawnSlotIndex++;
+
+  const spawnX = Math.max(30, Math.min(w - 30, slot.xRatio * w + (Math.random() - 0.5) * 40));
+  const spawnY = Math.max(30, Math.min(h - 30, slot.yRatio * h + (Math.random() - 0.5) * 40));
+
+  // Maintain max 6 active orbs at all times
+  if (activeOrbs.length >= MAX_ORBS) {
+    activeOrbs.shift(); // Retire oldest orb
   }
 
-  const org = createOrganism(spawnX, spawnY);
-  // Velocity impulse exploding outward from click
-  const burstAngle = Math.random() * Math.PI * 2;
-  org.vx = Math.cos(burstAngle) * 3.6;
-  org.vy = Math.sin(burstAngle) * 3.6;
-  activeOrganisms.push(org);
+  const orb = createOrb(spawnX, spawnY);
+  // Velocity oriented smoothly toward screen center
+  const toCenterX = (w / 2) - spawnX;
+  const toCenterY = (h / 2) - spawnY;
+  const centerAngle = Math.atan2(toCenterY, toCenterX) + (Math.random() - 0.5) * 0.8;
+  orb.vx = Math.cos(centerAngle) * 2.6;
+  orb.vy = Math.sin(centerAngle) * 2.6;
+  activeOrbs.push(orb);
 
-  // Also spawn a Game of Life burst right at the button
-  spawnGolPattern(spawnX, spawnY);
-  wakeAntigravityLoop();
+  // Trigger ripple pattern at the clicked button location
+  if (typeof clickX === "number" && typeof clickY === "number") {
+    spawnGolPattern(clickX, clickY);
+  }
+  wakeBackgroundLoop();
 }
 
-function ensureDefaultOrganism() {
-  if (activeOrganisms.length === 0) {
+function ensureDefaultOrb() {
+  if (activeOrbs.length === 0) {
     const w = window.innerWidth || 800;
     const h = window.innerHeight || 600;
-    const initX = (globalBgMouse.x > 30 && globalBgMouse.x < w - 30) ? globalBgMouse.x : w / 2;
-    const initY = (globalBgMouse.y > 30 && globalBgMouse.y < h - 30) ? globalBgMouse.y : h / 2;
-    activeOrganisms.push(createOrganism(initX, initY, 1.85, 0));
+    const slot = ORB_SPACES[0];
+    activeOrbs.push(createOrb(slot.xRatio * w, slot.yRatio * h, 1.85, 0));
   }
 }
 
-let organismIdleTimer = null;
+let orbIdleTimer = null;
 const IDLE_DELAY_MS = 2500;
 let isWindowFocused = (typeof document !== "undefined" && document.hasFocus) ? document.hasFocus() : true;
 
-function activateOrganism() {
-  ensureDefaultOrganism();
-  wakeAntigravityLoop();
+function activateOrb() {
+  ensureDefaultOrb();
+  wakeBackgroundLoop();
 }
 
-function deactivateOrganism() {
-  resetOrganismIdleTimer();
+function deactivateOrb() {
+  resetOrbIdleTimer();
 }
 
-function resetOrganismIdleTimer() {
-  clearTimeout(organismIdleTimer);
+function resetOrbIdleTimer() {
+  clearTimeout(orbIdleTimer);
   if (isWindowFocused) {
-    organismIdleTimer = setTimeout(() => {
-      activateOrganism();
+    orbIdleTimer = setTimeout(() => {
+      activateOrb();
     }, IDLE_DELAY_MS);
   }
 }
 
-// Global cursor tracking across the entire window for the antigravity background canvas
+// Global cursor tracking across the entire window for the background canvas
 window.addEventListener("mousemove", (e) => {
-  globalBgMouse.x = e.clientX;
-  globalBgMouse.y = e.clientY;
-  globalBgMouse.active = true;
-  resetOrganismIdleTimer();
-  wakeAntigravityLoop();
+  globalMouse.x = e.clientX;
+  globalMouse.y = e.clientY;
+  globalMouse.active = true;
+  resetOrbIdleTimer();
+  wakeBackgroundLoop();
 });
 
 window.addEventListener("mouseleave", () => {
-  globalBgMouse.active = false;
-  activateOrganism();
+  globalMouse.active = false;
+  activateOrb();
 });
 
 window.addEventListener("touchmove", (e) => {
   if (e.touches && e.touches.length > 0) {
-    globalBgMouse.x = e.touches[0].clientX;
-    globalBgMouse.y = e.touches[0].clientY;
-    globalBgMouse.active = true;
-    resetOrganismIdleTimer();
-    wakeAntigravityLoop();
+    globalMouse.x = e.touches[0].clientX;
+    globalMouse.y = e.touches[0].clientY;
+    globalMouse.active = true;
+    resetOrbIdleTimer();
+    wakeBackgroundLoop();
   }
 }, { passive: true });
 
 window.addEventListener("touchend", () => {
-  globalBgMouse.active = false;
-  resetOrganismIdleTimer();
+  globalMouse.active = false;
+  resetOrbIdleTimer();
 });
 
 window.addEventListener("blur", () => {
   isWindowFocused = false;
-  activateOrganism();
+  activateOrb();
 });
 
 window.addEventListener("focus", () => {
   isWindowFocused = true;
-  lastOrganismTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
-  resetOrganismIdleTimer();
-  wakeAntigravityLoop();
+  lastOrbTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+  resetOrbIdleTimer();
+  wakeBackgroundLoop();
 });
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
-    if (agAnimationId) {
-      cancelAnimationFrame(agAnimationId);
-      agAnimationId = null;
+    if (bgAnimationId) {
+      cancelAnimationFrame(bgAnimationId);
+      bgAnimationId = null;
     }
   } else {
-    lastOrganismTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+    lastOrbTick = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
     isWindowFocused = (typeof document !== "undefined" && document.hasFocus) ? document.hasFocus() : true;
     if (!isWindowFocused) {
-      activateOrganism();
+      activateOrb();
     } else {
-      resetOrganismIdleTimer();
+      resetOrbIdleTimer();
     }
-    wakeAntigravityLoop();
+    wakeBackgroundLoop();
   }
 });
 
 // Start with 1 default living organism
-ensureDefaultOrganism();
-resetOrganismIdleTimer();
+ensureDefaultOrb();
+resetOrbIdleTimer();
 
 // Conway's Game of Life Cellular Automaton & Dynamic Pulsing State
 let golCols = 0;
@@ -1351,7 +1371,7 @@ let golNextGrid = null;
 let lastGolTick = 0;
 const GOL_TICK_MS = 140; // ~7 generations/sec
 let golPatternIndex = 0;
-let lastOrganismSeedTime = 0;
+let lastOrbSeedTime = 0;
 
 // Iconic Conway Patterns (relative offsets [dc, dr])
 const GOL_PATTERNS = [
@@ -1408,7 +1428,7 @@ function spawnGolPattern(centerX, centerY, patternType = -1) {
     }
   }
 
-  wakeAntigravityLoop();
+  wakeBackgroundLoop();
 }
 
 // Each button click or UI control spawns a living cellular automaton pattern!
@@ -1432,7 +1452,7 @@ window.addEventListener("click", (e) => {
 
   if (isButton) {
     // Spawn 1 new living organism that swims outward from this button!
-    spawnOrganismAt(e.clientX, e.clientY);
+    spawnOrbInNextSpace(e.clientX, e.clientY);
   } else if (e.clientX < window.innerWidth && e.clientY < window.innerHeight) {
     // Subtle mini-burst on other background clicks
     spawnGolPattern(e.clientX, e.clientY, 1);
@@ -1489,7 +1509,7 @@ function stepGameOfLife() {
   golNextGrid = temp;
 
   // Extinction safeguard: if total living cells drop below 4, inject a fresh seed
-  if (aliveCount < 4 && (organism.active || !isWindowFocused)) {
+  if (aliveCount < 4 && (activeOrbs.length > 0 || !isWindowFocused)) {
     const randX = 100 + Math.random() * (bgGridW - 200);
     const randY = 100 + Math.random() * (bgGridH - 200);
     spawnGolPattern(randX, randY, 0); // Glider
@@ -1537,7 +1557,7 @@ function initBgCircleGrid(w, h) {
   spawnGolPattern(w * 0.75, h * 0.65, 3); // LWSS in lower-right
 }
 
-function drawAntigravityBg(canvas) {
+function drawBackgroundGrid(canvas) {
   if (!canvas) return false;
   const ctx = canvas.getContext("2d");
   const dpr = window.devicePixelRatio || 1;
@@ -1567,15 +1587,15 @@ function drawAntigravityBg(canvas) {
     stepGameOfLife();
   }
 
-  // Update Autonomous Multi-Organism Physics & Biomorphic Wandering
-  const dt = Math.min(0.064, Math.max(0.008, (curNow - lastOrganismTick) / 1000));
-  lastOrganismTick = curNow;
+  // Update Ambient Floating Orbs Physics & Smooth Wandering
+  const dt = Math.min(0.064, Math.max(0.008, (curNow - lastOrbTick) / 1000));
+  lastOrbTick = curNow;
 
-  const numOrgs = activeOrganisms.length;
+  const numOrbs = activeOrbs.length;
   const pad = 100;
 
-  for (let o = 0; o < numOrgs; o++) {
-    const org = activeOrganisms[o];
+  for (let o = 0; o < numOrbs; o++) {
+    const org = activeOrbs[o];
     org.breathPhase += dt * org.breathSpeed;
     if (org.breathPhase > Math.PI * 2) org.breathPhase -= Math.PI * 2;
     const bSin = Math.sin(org.breathPhase);
@@ -1622,31 +1642,46 @@ function drawAntigravityBg(canvas) {
   }
 
   // User mouse also ignites cells
-  if (globalBgMouse.active && golGrid) {
-    const mouseC = Math.round((globalBgMouse.x - golStartX) / golSpacing);
-    const mouseR = Math.round((globalBgMouse.y - golStartY) / golSpacing);
+  if (globalMouse.active && golGrid) {
+    const mouseC = Math.round((globalMouse.x - golStartX) / golSpacing);
+    const mouseR = Math.round((globalMouse.y - golStartY) / golSpacing);
     if (mouseC >= 0 && mouseC < golCols && mouseR >= 0 && mouseR < golRows) {
       golGrid[mouseC * golRows + mouseR] = 1;
     }
   }
 
-  // 1. Ambient bioluminescent spotlight glow for all living organisms
-  for (let o = 0; o < numOrgs; o++) {
-    const org = activeOrganisms[o];
+  // 1. Ambient spotlight glow for floating orbs
+  for (let o = 0; o < numOrbs; o++) {
+    const org = activeOrbs[o];
     const radGrad = ctx.createRadialGradient(
       org.x, org.y, 0,
       org.x, org.y, org.currentSpotR
     );
     const bSin = org.currentBSin;
     if (org.hueType === 0) {
+      // Emerald
       radGrad.addColorStop(0, `rgba(16, 185, 129, ${(0.13 + 0.04 * bSin) * org.alpha})`);
       radGrad.addColorStop(0.5, `rgba(56, 189, 248, ${(0.06 + 0.03 * bSin) * org.alpha})`);
     } else if (org.hueType === 1) {
+      // Electric Cyan
       radGrad.addColorStop(0, `rgba(56, 189, 248, ${(0.14 + 0.04 * bSin) * org.alpha})`);
       radGrad.addColorStop(0.5, `rgba(16, 185, 129, ${(0.06 + 0.03 * bSin) * org.alpha})`);
-    } else {
+    } else if (org.hueType === 2) {
+      // Deep Aqua / Teal
       radGrad.addColorStop(0, `rgba(20, 184, 166, ${(0.13 + 0.04 * bSin) * org.alpha})`);
       radGrad.addColorStop(0.5, `rgba(14, 165, 233, ${(0.06 + 0.03 * bSin) * org.alpha})`);
+    } else if (org.hueType === 3) {
+      // Warm Amber / Gold
+      radGrad.addColorStop(0, `rgba(245, 158, 11, ${(0.13 + 0.04 * bSin) * org.alpha})`);
+      radGrad.addColorStop(0.5, `rgba(234, 88, 12, ${(0.06 + 0.03 * bSin) * org.alpha})`);
+    } else if (org.hueType === 4) {
+      // Soft Violet
+      radGrad.addColorStop(0, `rgba(168, 85, 247, ${(0.13 + 0.04 * bSin) * org.alpha})`);
+      radGrad.addColorStop(0.5, `rgba(59, 130, 246, ${(0.06 + 0.03 * bSin) * org.alpha})`);
+    } else {
+      // Rose / Coral
+      radGrad.addColorStop(0, `rgba(244, 63, 94, ${(0.13 + 0.04 * bSin) * org.alpha})`);
+      radGrad.addColorStop(0.5, `rgba(245, 158, 11, ${(0.06 + 0.03 * bSin) * org.alpha})`);
     }
     radGrad.addColorStop(1, "rgba(8, 8, 10, 0)");
     ctx.fillStyle = radGrad;
@@ -1656,22 +1691,22 @@ function drawAntigravityBg(canvas) {
   }
 
   // Cursor spotlight glow if active
-  if (globalBgMouse.active) {
+  if (globalMouse.active) {
     const spotR = 320;
     const radGrad = ctx.createRadialGradient(
-      globalBgMouse.x, globalBgMouse.y, 0,
-      globalBgMouse.x, globalBgMouse.y, spotR
+      globalMouse.x, globalMouse.y, 0,
+      globalMouse.x, globalMouse.y, spotR
     );
     radGrad.addColorStop(0, "rgba(16, 185, 129, 0.14)");
     radGrad.addColorStop(0.5, "rgba(56, 189, 248, 0.06)");
     radGrad.addColorStop(1, "rgba(8, 8, 10, 0)");
     ctx.fillStyle = radGrad;
     ctx.beginPath();
-    ctx.arc(globalBgMouse.x, globalBgMouse.y, spotR, 0, Math.PI * 2);
+    ctx.arc(globalMouse.x, globalMouse.y, spotR, 0, Math.PI * 2);
     ctx.fill();
   }
 
-  // 2. Interactive Matrix of Circles (Game of Life, Multi-Organism Antigravity Deflection & Scale Pulsing)
+  // 2. Interactive Matrix of Circles (Game of Life, Ambient Orbs & Scale Pulsing)
   const len = bgDots.length;
   const globalBreath = Math.sin(curNow * 0.0028);
 
@@ -1706,9 +1741,9 @@ function drawAntigravityBg(canvas) {
     }
 
     // Deflection from cursor
-    if (globalBgMouse.active) {
-      const dx = dot.ox - globalBgMouse.x;
-      const dy = dot.oy - globalBgMouse.y;
+    if (globalMouse.active) {
+      const dx = dot.ox - globalMouse.x;
+      const dy = dot.oy - globalMouse.y;
       const dist = Math.hypot(dx, dy);
       const influenceR = 270;
       if (dist < influenceR) {
@@ -1721,9 +1756,9 @@ function drawAntigravityBg(canvas) {
       }
     }
 
-    // Deflection from living organisms
-    for (let o = 0; o < numOrgs; o++) {
-      const org = activeOrganisms[o];
+    // Deflection from floating orbs
+    for (let o = 0; o < numOrbs; o++) {
+      const org = activeOrbs[o];
       const dx = dot.ox - org.x;
       const dy = dot.oy - org.y;
       const dist = Math.hypot(dx, dy);
@@ -1791,14 +1826,14 @@ function drawAntigravityBg(canvas) {
   return anyMoving;
 }
 
-function initAntigravityCanvas() {
-  const canvas = document.getElementById("antigravityCanvas");
-  if (!canvas || antigravityCanvasInited) return;
-  antigravityCanvasInited = true;
+function initTelemetryCanvas() {
+  const canvas = document.getElementById("telemetryCanvas");
+  if (!canvas || telemetryCanvasInited) return;
+  telemetryCanvasInited = true;
 
-  agParticles = [];
+  bgParticles = [];
   for (let i = 0; i < 20; i++) {
-    agParticles.push({
+    bgParticles.push({
       x: Math.random() * 500,
       y: Math.random() * 160,
       vx: (Math.random() - 0.5) * 0.35,
@@ -1813,18 +1848,18 @@ function initAntigravityCanvas() {
 
   canvas.addEventListener("mousemove", (e) => {
     const rect = canvas.getBoundingClientRect();
-    agMouse.x = e.clientX - rect.left;
-    agMouse.y = e.clientY - rect.top;
-    agMouse.active = true;
+    bgMouse.x = e.clientX - rect.left;
+    bgMouse.y = e.clientY - rect.top;
+    bgMouse.active = true;
 
-    if (agDataPoints.length > 0 && hudTooltip) {
-      let closest = agDataPoints[0];
-      let minDist = Math.abs(agMouse.x - closest.x);
-      for (let i = 1; i < agDataPoints.length; i++) {
-        const dist = Math.abs(agMouse.x - agDataPoints[i].x);
+    if (chartDataPoints.length > 0 && hudTooltip) {
+      let closest = chartDataPoints[0];
+      let minDist = Math.abs(bgMouse.x - closest.x);
+      for (let i = 1; i < chartDataPoints.length; i++) {
+        const dist = Math.abs(bgMouse.x - chartDataPoints[i].x);
         if (dist < minDist) {
           minDist = dist;
-          closest = agDataPoints[i];
+          closest = chartDataPoints[i];
         }
       }
 
@@ -1856,9 +1891,9 @@ function initAntigravityCanvas() {
   });
 
   canvas.addEventListener("mouseleave", () => {
-    agMouse.x = -1000;
-    agMouse.y = -1000;
-    agMouse.active = false;
+    bgMouse.x = -1000;
+    bgMouse.y = -1000;
+    bgMouse.active = false;
     if (hudTooltip) hudTooltip.style.display = "none";
     if (curPointLabel) curPointLabel.textContent = "interactive";
   });
@@ -1883,11 +1918,11 @@ function drawTelemetryChart(canvas) {
   const gridGap = 24;
   for (let gx = 12; gx < w; gx += gridGap) {
     for (let gy = 12; gy < h; gy += gridGap) {
-      const dToMouse = Math.hypot(agMouse.x - gx, agMouse.y - gy);
+      const dToMouse = Math.hypot(bgMouse.x - gx, bgMouse.y - gy);
       let dotAlpha = 0.12;
       let dotRadius = 1;
       let dotColor = "113, 113, 122"; // zinc
-      if (agMouse.active && dToMouse < 70) {
+      if (bgMouse.active && dToMouse < 70) {
         const factor = (1 - dToMouse / 70);
         dotAlpha = 0.12 + factor * 0.55;
         dotRadius = 1 + factor * 1.5;
@@ -1901,8 +1936,8 @@ function drawTelemetryChart(canvas) {
   }
 
   // 2. Floating Constellation Micro-particles with cursor repulsion
-  for (let i = 0; i < agParticles.length; i++) {
-    const p = agParticles[i];
+  for (let i = 0; i < bgParticles.length; i++) {
+    const p = bgParticles[i];
     p.x += p.vx;
     p.y += p.vy;
     if (p.x < 0) p.x = w;
@@ -1910,9 +1945,9 @@ function drawTelemetryChart(canvas) {
     if (p.y < 0) p.y = h;
     if (p.y > h) p.y = 0;
 
-    if (agMouse.active) {
-      const dx = p.x - agMouse.x;
-      const dy = p.y - agMouse.y;
+    if (bgMouse.active) {
+      const dx = p.x - bgMouse.x;
+      const dy = p.y - bgMouse.y;
       const dist = Math.hypot(dx, dy);
       if (dist < 60 && dist > 1) {
         const force = (60 - dist) / 60 * 0.4;
@@ -1926,8 +1961,8 @@ function drawTelemetryChart(canvas) {
     ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
     ctx.fill();
 
-    for (let j = i + 1; j < agParticles.length; j++) {
-      const p2 = agParticles[j];
+    for (let j = i + 1; j < bgParticles.length; j++) {
+      const p2 = bgParticles[j];
       const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
       if (dist < 42) {
         const lineAlpha = (1 - dist / 42) * 0.18;
@@ -1942,34 +1977,34 @@ function drawTelemetryChart(canvas) {
   }
 
   // 3. Financial Cumulative Balance Trajectory
-  if (agDataPoints.length > 1) {
+  if (chartDataPoints.length > 1) {
     const padX = 20;
     const padY = 24;
     const effW = Math.max(10, w - padX * 2);
     const effH = Math.max(10, h - padY * 2);
 
-    const minVal = Math.min(...agDataPoints.map(p => p.cumBal));
-    const maxVal = Math.max(...agDataPoints.map(p => p.cumBal));
+    const minVal = Math.min(...chartDataPoints.map(p => p.cumBal));
+    const maxVal = Math.max(...chartDataPoints.map(p => p.cumBal));
     const range = Math.max(1, maxVal - minVal);
 
-    agDataPoints.forEach((p, idx) => {
-      p.x = padX + (idx / (agDataPoints.length - 1)) * effW;
+    chartDataPoints.forEach((p, idx) => {
+      p.x = padX + (idx / (chartDataPoints.length - 1)) * effW;
       const normY = (p.cumBal - minVal) / range;
       p.y = h - padY - (normY * effH);
     });
 
     // Area gradient
     ctx.beginPath();
-    ctx.moveTo(agDataPoints[0].x, h - padY);
-    ctx.lineTo(agDataPoints[0].x, agDataPoints[0].y);
-    for (let i = 1; i < agDataPoints.length; i++) {
-      const prev = agDataPoints[i - 1];
-      const curr = agDataPoints[i];
+    ctx.moveTo(chartDataPoints[0].x, h - padY);
+    ctx.lineTo(chartDataPoints[0].x, chartDataPoints[0].y);
+    for (let i = 1; i < chartDataPoints.length; i++) {
+      const prev = chartDataPoints[i - 1];
+      const curr = chartDataPoints[i];
       const mx = (prev.x + curr.x) / 2;
       const my = (prev.y + curr.y) / 2;
       ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
     }
-    const last = agDataPoints[agDataPoints.length - 1];
+    const last = chartDataPoints[chartDataPoints.length - 1];
     ctx.lineTo(last.x, last.y);
     ctx.lineTo(last.x, h - padY);
     ctx.closePath();
@@ -1990,10 +2025,10 @@ function drawTelemetryChart(canvas) {
 
     // Main curve stroke
     ctx.beginPath();
-    ctx.moveTo(agDataPoints[0].x, agDataPoints[0].y);
-    for (let i = 1; i < agDataPoints.length; i++) {
-      const prev = agDataPoints[i - 1];
-      const curr = agDataPoints[i];
+    ctx.moveTo(chartDataPoints[0].x, chartDataPoints[0].y);
+    for (let i = 1; i < chartDataPoints.length; i++) {
+      const prev = chartDataPoints[i - 1];
+      const curr = chartDataPoints[i];
       const mx = (prev.x + curr.x) / 2;
       const my = (prev.y + curr.y) / 2;
       ctx.quadraticCurveTo(prev.x, prev.y, mx, my);
@@ -2004,7 +2039,7 @@ function drawTelemetryChart(canvas) {
     ctx.stroke();
 
     // Data pips
-    agDataPoints.forEach(p => {
+    chartDataPoints.forEach(p => {
       ctx.fillStyle = "#09090b";
       ctx.strokeStyle = "#10b981";
       ctx.lineWidth = 1.5;
@@ -2015,14 +2050,14 @@ function drawTelemetryChart(canvas) {
     });
 
     // Cursor interaction: scanline and snap pip
-    if (agMouse.active) {
-      let closest = agDataPoints[0];
-      let minDist = Math.abs(agMouse.x - closest.x);
-      for (let i = 1; i < agDataPoints.length; i++) {
-        const dist = Math.abs(agMouse.x - agDataPoints[i].x);
+    if (bgMouse.active) {
+      let closest = chartDataPoints[0];
+      let minDist = Math.abs(bgMouse.x - closest.x);
+      for (let i = 1; i < chartDataPoints.length; i++) {
+        const dist = Math.abs(bgMouse.x - chartDataPoints[i].x);
         if (dist < minDist) {
           minDist = dist;
-          closest = agDataPoints[i];
+          closest = chartDataPoints[i];
         }
       }
 
@@ -2052,31 +2087,31 @@ function drawTelemetryChart(canvas) {
   ctx.restore();
 }
 
-function renderAntigravityLoop() {
-  const bgCanvas = document.getElementById("antigravityBgCanvas");
+function renderBackgroundLoop() {
+  const bgCanvas = document.getElementById("bgCanvas");
   let anyMoving = false;
   if (bgCanvas) {
-    anyMoving = drawAntigravityBg(bgCanvas);
+    anyMoving = drawBackgroundGrid(bgCanvas);
   }
 
   const modal = document.getElementById("analyticsModal");
   if (modal && modal.style.display !== "none") {
-    const canvas = document.getElementById("antigravityCanvas");
+    const canvas = document.getElementById("telemetryCanvas");
     if (canvas) {
       drawTelemetryChart(canvas);
     }
   }
 
-  if (globalBgMouse.active || activeOrganisms.length > 0 || anyMoving || (modal && modal.style.display !== "none")) {
-    agAnimationId = requestAnimationFrame(renderAntigravityLoop);
+  if (globalMouse.active || activeOrbs.length > 0 || anyMoving || (modal && modal.style.display !== "none")) {
+    bgAnimationId = requestAnimationFrame(renderBackgroundLoop);
   } else {
-    agAnimationId = null;
+    bgAnimationId = null;
   }
 }
 
-function wakeAntigravityLoop() {
-  if (!agAnimationId) {
-    agAnimationId = requestAnimationFrame(renderAntigravityLoop);
+function wakeBackgroundLoop() {
+  if (!bgAnimationId) {
+    bgAnimationId = requestAnimationFrame(renderBackgroundLoop);
   }
 }
 
@@ -2172,7 +2207,7 @@ function renderAnalyticsUI() {
   }
 
   // Populate data points for the interactive canvas
-  agDataPoints = daysList.map(d => ({
+  chartDataPoints = daysList.map(d => ({
     dateStr: d.dateStr,
     label: d.label,
     fullDate: d.fullDate,
@@ -2965,15 +3000,15 @@ function setupEventListeners() {
     if (modal) modal.style.display = "flex";
     try {
       renderAnalyticsUI();
-      initAntigravityCanvas();
-      const bgCanvas = document.getElementById("antigravityBgCanvas");
+      initTelemetryCanvas();
+      const bgCanvas = document.getElementById("bgCanvas");
       if (bgCanvas) {
         const w = bgCanvas.clientWidth || window.innerWidth || 780;
         const h = bgCanvas.clientHeight || window.innerHeight || 600;
         initBgCircleGrid(w, h);
       }
-      if (!agAnimationId) {
-        agAnimationId = requestAnimationFrame(renderAntigravityLoop);
+      if (!bgAnimationId) {
+        bgAnimationId = requestAnimationFrame(renderBackgroundLoop);
       }
     } catch (err) {
       console.error("Error opening analytics:", err);
@@ -2985,7 +3020,7 @@ function setupEventListeners() {
     if (modal) modal.style.display = "none";
     document.documentElement.classList.remove("metrics-expanded");
     document.body.classList.remove("metrics-expanded");
-    wakeAntigravityLoop();
+    wakeBackgroundLoop();
   }
 
   const btnAnalytics = document.getElementById("btnAnalytics");
@@ -3589,7 +3624,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   if (dateLabel) dateLabel.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
 
-  wakeAntigravityLoop();
+  wakeBackgroundLoop();
   updatePrecisionChrono();
   renderCalendarView();
   setupEventListeners();

@@ -22,6 +22,7 @@ Zero third-party servers, zero hosting costs, zero tracking.
   - Discrete privacy toggle (`Hide` / `Show`) masks your stashed reserves (`••••••`).
   - 1-click **Add to Finance** (`Unstash`) transfers reserve money directly back into today's spendable cash when you need it.
 - **Dynamic Quick Pills**: One-tap buttons for routine transit fares and meal expenses, with an integrated custom pill editor.
+- **Interactive Ambient Background**: Fullscreen circle matrix featuring spring-damping cursor deflection, Conway's Game of Life cellular automaton, and up to 6 ambient glowing orbs distributed across 6 viewport zones.
 - **Minimalist Monochrome Dark Theme**: High-contrast, distraction-free interface (`#09090b`) with tabular monospace figures.
 - **Multi-User Ready**: Anyone can clone or install the extension and point it to their own Google Sheet or Google Account.
 
