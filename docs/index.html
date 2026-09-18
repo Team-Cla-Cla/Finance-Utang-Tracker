@@ -1303,7 +1303,14 @@
     </div>
   </div>
 
-  <script src="google_sync.js?v=2.3.3"></script>
-  <script src="popup.js?v=2.3.3"></script>
+  <script src="google_sync.js?v=2.3.4"></script>
+  <script src="popup.js?v=2.3.4"></script>
+  <script>
+    if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW register notice:", err));
+      });
+    }
+  </script>
 </body>
 </html>
