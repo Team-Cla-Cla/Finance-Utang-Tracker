@@ -1,21 +1,6 @@
 <div align="center">
 
-<img src="docs/icons/icon.svg" alt="Finance & Utang Tracker logo" width="96">
-
-# Finance & Utang Tracker
-
-**An offline-first personal finance and debt tracker for everyday budgeting.**
-
-<p>
-  <a href="https://team-cla-cla.github.io/Finance-Utang-Tracker/"><img src="https://img.shields.io/badge/demo-live-2ea44f?style=flat-square" alt="Live Demo"></a>&nbsp;
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="License"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main"><img src="https://img.shields.io/github/last-commit/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Last Commit"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main"><img src="https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Commit Activity"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers"><img src="https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Stars"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members"><img src="https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Forks"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker"><img src="https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Top Language"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/actions/workflows/test.yml"><img src="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
-</p>
+<img src="docs/readme-hero.svg" alt="Finance & Utang Tracker: local-first finance system" width="100%">
 
 [Live Demo](https://team-cla-cla.github.io/Finance-Utang-Tracker/) ·
 [Report a Bug](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new) ·
@@ -26,6 +11,10 @@
 Finance & Utang Tracker helps students and daily commuters record allowances, expenses, debts, repayments, and savings without depending on a hosted backend. It is available as a responsive web app, installable Progressive Web App (PWA), cross-browser extension, and Python command-line client.
 
 The application stores data locally by default. Google Sheets synchronization is optional and connects directly from the client to the user's own Google account.
+
+<div align="center">
+<a href="docs/readme-divider.svg"><img src="docs/readme-divider.svg" alt="Decorative signal divider" width="100%"></a>
+</div>
 
 ## Contents
 
@@ -41,12 +30,34 @@ The application stores data locally by default. Google Sheets synchronization is
 - [Project Structure](#project-structure)
 - [Testing](#testing)
 - [Roadmap](#roadmap)
+- [Repository Metrics](#repository-metrics)
 - [Contributing](CONTRIBUTING.md)
 - [Support](SUPPORT.md)
 - [Security](SECURITY.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Changelog](CHANGELOG.md)
 - [License](#license)
+
+## Project Status
+
+| Area | Status |
+| --- | --- |
+| Web app / PWA | Active |
+| Browser extension | Active |
+| Python CLI | Available |
+| Google Sheets sync | Optional |
+| Automated tests | GitHub Actions |
+| Contributions | Welcome |
+
+## Technology Stack
+
+| Technology | Role |
+| --- | --- |
+| HTML, CSS, JavaScript | Web app and browser extension |
+| Python | Offline command-line client and test suite |
+| Google Sheets API | Optional direct synchronization |
+| Service Worker | Offline PWA asset caching |
+| GitHub Pages | Static web app hosting |
 
 ## Features
 
@@ -270,6 +281,8 @@ python3 test_tracker.py
 
 The suite checks Python syntax, JavaScript syntax, extension assets and manifest configuration, and core finance calculations.
 
+The same command runs automatically for pushes and pull requests through the [GitHub Actions test workflow](.github/workflows/test.yml).
+
 ## Roadmap
 
 - [ ] Add automated GitHub Actions testing
@@ -277,6 +290,16 @@ The suite checks Python syntax, JavaScript syntax, extension assets and manifest
 - [ ] Add screenshots and short usage demonstrations
 - [ ] Improve extension distribution instructions
 - [ ] Support additional spreadsheet providers
+
+## Repository Metrics
+
+The repository's current activity is available from GitHub:
+
+- [Commit history](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
+- [Contributors](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/graphs/contributors)
+- [Stars](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers)
+- [Forks](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
+- [Open issues](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues)
 
 ## Contributing
 

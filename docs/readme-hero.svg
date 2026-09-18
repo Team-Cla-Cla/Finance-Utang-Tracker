@@ -1,0 +1,44 @@
+<svg width="1200" height="260" viewBox="0 0 1200 260" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Finance and Utang Tracker</title>
+  <desc id="desc">A dark green animated-style finance dashboard header.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1200" y2="260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#09090B"/>
+      <stop offset="0.55" stop-color="#111827"/>
+      <stop offset="1" stop-color="#064E3B"/>
+    </linearGradient>
+    <linearGradient id="signal" x1="80" y1="180" x2="1120" y2="75" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#10B981" stop-opacity="0"/>
+      <stop offset="0.35" stop-color="#10B981"/>
+      <stop offset="0.72" stop-color="#67E8F9"/>
+      <stop offset="1" stop-color="#67E8F9" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-40%" width="140%" height="180%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <pattern id="grid" width="42" height="42" patternUnits="userSpaceOnUse">
+      <path d="M42 0H0V42" stroke="#A7F3D0" stroke-opacity="0.08"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="260" rx="18" fill="url(#background)"/>
+  <rect width="1200" height="260" rx="18" fill="url(#grid)"/>
+  <path d="M0 205C135 190 170 215 280 190C390 165 430 184 525 154C640 118 695 164 786 128C880 90 937 118 1020 78C1080 49 1146 56 1200 28" stroke="#10B981" stroke-opacity="0.2" stroke-width="14" filter="url(#glow)"/>
+  <path d="M0 205C135 190 170 215 280 190C390 165 430 184 525 154C640 118 695 164 786 128C880 90 937 118 1020 78C1080 49 1146 56 1200 28" stroke="url(#signal)" stroke-width="2"/>
+  <circle cx="786" cy="128" r="5" fill="#A7F3D0">
+    <animate attributeName="opacity" values="1;0.45;1" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="786" cy="128" r="15" stroke="#A7F3D0" stroke-opacity="0.25">
+    <animate attributeName="r" values="12;22;12" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0;0.5" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1020" cy="78" r="4" fill="#67E8F9">
+    <animate attributeName="opacity" values="0.45;1;0.45" dur="3.6s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1020" cy="78" r="13" stroke="#67E8F9" stroke-opacity="0.22">
+    <animate attributeName="r" values="10;19;10" dur="3.6s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.45;0;0.45" dur="3.6s" repeatCount="indefinite"/>
+  </circle>
+  <text x="68" y="92" fill="#A7F3D0" font-family="monospace" font-size="13" letter-spacing="3">LOCAL-FIRST FINANCE SYSTEM</text>
+  <text x="68" y="143" fill="#F4F4F5" font-family="Arial, sans-serif" font-size="42" font-weight="700">Finance &amp; Utang Tracker</text>
+  <text x="70" y="176" fill="#A1A1AA" font-family="Arial, sans-serif" font-size="17">Track daily cash, debts, and reserves without a hosted backend.</text>
+</svg>
