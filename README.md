@@ -6,13 +6,15 @@
 
 **An offline-first personal finance and debt tracker for everyday budgeting.**
 
-[![Live Demo](https://img.shields.io/badge/demo-live-2ea44f?style=flat-square)](https://team-cla-cla.github.io/Finance-Utang-Tracker/)
-[![License](https://img.shields.io/github/license/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](LICENSE)
-[![Last Commit](https://img.shields.io/github/last-commit/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
-[![Commit Activity](https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
-[![Stars](https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers)
-[![Forks](https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
-[![Top Language](https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
+<p>
+  <a href="https://team-cla-cla.github.io/Finance-Utang-Tracker/"><img src="https://img.shields.io/badge/demo-live-2ea44f?style=flat-square" alt="Live Demo"></a>&nbsp;
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="License"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main"><img src="https://img.shields.io/github/last-commit/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Last Commit"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main"><img src="https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Commit Activity"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers"><img src="https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Stars"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members"><img src="https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Forks"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker"><img src="https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Top Language"></a>
+</p>
 
 [Live Demo](https://team-cla-cla.github.io/Finance-Utang-Tracker/) ·
 [Report a Bug](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new) ·
