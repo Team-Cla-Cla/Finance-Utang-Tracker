@@ -11,7 +11,7 @@
 
 When reporting a problem, include:
 
-- Whether you used the web app, PWA, extension, or CLI
+- Whether you used the web app, PWA, or extension
 - Browser, operating system, and relevant versions
 - Steps to reproduce the problem
 - Expected and actual behavior

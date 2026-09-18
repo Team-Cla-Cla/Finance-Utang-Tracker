@@ -7,7 +7,6 @@ Describe what changed and why.
 - [ ] `python3 test_tracker.py`
 - [ ] Tested the web app locally, if applicable
 - [ ] Tested the browser extension, if applicable
-- [ ] Tested the CLI, if applicable
 
 ## Checklist
 

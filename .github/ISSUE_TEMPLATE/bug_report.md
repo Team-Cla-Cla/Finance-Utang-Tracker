@@ -15,7 +15,6 @@ Describe the problem clearly.
 - [ ] Web app or PWA
 - [ ] Firefox extension
 - [ ] Chrome, Brave, or Edge extension
-- [ ] Python CLI
 
 Browser, operating system, and version:
 

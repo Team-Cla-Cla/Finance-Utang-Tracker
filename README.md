@@ -6,9 +6,20 @@
 [Report a Bug](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new) ·
 [Request a Feature](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new)
 
+<br>
+
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" alt="JavaScript">
+<img src="https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" alt="Progressive Web App">
+<img src="https://img.shields.io/badge/WebExtensions-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white" alt="WebExtensions">
+<img src="https://img.shields.io/badge/Google_Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white" alt="Google Sheets">
+<img src="https://img.shields.io/badge/GitHub_Pages-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Pages">
+<img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions">
+
 </div>
 
-Finance & Utang Tracker helps students and daily commuters record allowances, expenses, debts, repayments, and savings without depending on a hosted backend. It is available as a responsive web app, installable Progressive Web App (PWA), cross-browser extension, and Python command-line client.
+Finance & Utang Tracker helps students and daily commuters record allowances, expenses, debts, repayments, and savings without depending on a hosted backend. It is available as a responsive web app, installable Progressive Web App (PWA), and cross-browser extension.
 
 The application stores data locally by default. Google Sheets synchronization is optional and connects directly from the client to the user's own Google account.
 
@@ -30,7 +41,6 @@ The application stores data locally by default. Google Sheets synchronization is
 - [Fork and Deploy Your Own Copy](#fork-and-deploy-your-own-copy)
 - [Google Sheets Synchronization](#google-sheets-synchronization)
 - [Browser Extension Installation](#browser-extension-installation)
-- [Command-Line Client](#command-line-client)
 - [Project Structure](#project-structure)
 - [Repository Map](#repository-map)
 - [Testing](#testing)
@@ -49,27 +59,23 @@ The application stores data locally by default. Google Sheets synchronization is
 | --- | --- |
 | Web app / PWA | Active |
 | Browser extension | Active |
-| Python CLI | Available |
 | Google Sheets sync | Optional |
 | Automated tests | GitHub Actions |
 | Contributions | Welcome |
 
 ## Tools & Technologies
 
-| Category | Tool | Purpose |
-| --- | --- |
-| Frontend | HTML, CSS, JavaScript | Web app and browser extension interface |
-| Local storage | Browser Storage API | Offline-first transaction and settings storage |
-| PWA | Service Worker | Offline caching and installable web app support |
-| Browser extension | WebExtensions API | Firefox, Chrome, Brave, and Edge integration |
-| CLI | Python 3 | Terminal-based finance tracking |
-| Cloud sync | Google Sheets API v4 | Optional direct spreadsheet synchronization |
-| Authentication | Google OAuth 2.0 | User-authorized Google account access |
-| Hosting | GitHub Pages | Static web app deployment from `docs/` |
-| Automation | GitHub Actions | Automated tests on pushes and pull requests |
-| Dependency updates | Dependabot | Monthly GitHub Actions dependency checks |
-| Packaging | Bash and ZIP | Firefox XPI and extension archive creation |
-| Version control | Git and GitHub | Source control, collaboration, and releases |
+| Layer | Technology | Role |
+| --- | --- | --- |
+| Interface | HTML5 · CSS3 · JavaScript | Responsive web app and extension UI |
+| Offline storage | Browser Storage API | Local-first transactions, settings, and sync queue |
+| Installability | Service Worker · PWA | Offline caching and home-screen installation |
+| Browser integration | WebExtensions API | Firefox, Chrome, Brave, and Edge support |
+| Cloud sync | Google Sheets API v4 | Optional synchronization to the user's spreadsheet |
+| Authentication | Google OAuth 2.0 | User-authorized access to Google services |
+| Delivery | GitHub Pages | Static hosting for the `docs/` web app |
+| Quality | GitHub Actions | Automated browser-app validation |
+| Packaging | Bash · ZIP · XPI | Browser extension distribution |
 
 ## Available Clients
 
@@ -77,7 +83,6 @@ The application stores data locally by default. Google Sheets synchronization is
 | --- | --- | --- | --- |
 | Web app / PWA | HTML, CSS, JavaScript, Service Worker | Desktop and mobile budgeting | GitHub Pages or local server |
 | Browser extension | WebExtensions API | Fast logging from the browser toolbar | Temporary or unpacked installation |
-| CLI | Python 3 | Terminal workflows and automation | Clone and run locally |
 | Google Sheets sync | OAuth 2.0 and Sheets API | Optional multi-device data synchronization | Enabled from Settings |
 
 ## Project Workflow
@@ -92,7 +97,7 @@ The application stores data locally by default. Google Sheets synchronization is
                  |                                 |
                  +----------------+----------------+
                                   |
-         Web app / PWA / Browser extension / CLI
+              Web app / PWA / Browser extension
                                   |
                      Local application state
                                   |
@@ -102,7 +107,7 @@ The application stores data locally by default. Google Sheets synchronization is
 ## Deployment and Automation
 
 - **GitHub Pages** hosts the static PWA from the `docs/` directory.
-- **GitHub Actions** runs `python3 test_tracker.py` on pushes and pull requests.
+- **GitHub Actions** runs the automated browser-app validation suite on pushes and pull requests.
 - **Dependabot** checks GitHub Actions dependencies monthly.
 - **Bash packaging** creates Firefox `.xpi` and ZIP archives.
 - **No build server is required** for the web app or browser extension.
@@ -126,7 +131,6 @@ The application stores data locally by default. Google Sheets synchronization is
 | --- | --- | --- |
 | Web app / PWA | Desktop and mobile use | [Deploy the web app](#fork-and-deploy-your-own-copy) |
 | Browser extension | Fast logging from a browser toolbar | [Install the extension](#browser-extension-installation) |
-| CLI | Terminal-based workflows and automation | [Use the CLI](#command-line-client) |
 
 ## Privacy
 
@@ -149,7 +153,7 @@ After forking the repository, use your own GitHub Pages URL:
 ## Architecture
 
 ```text
-Web app / PWA / Browser extension / CLI
+Web app / PWA / Browser extension
                     |
              Local application state
                     |
@@ -163,7 +167,6 @@ See [DDD.md](DDD.md) for domain and architecture notes, and [FEATURE_GUIDE.md](F
 The web app and browser extension do not require a package manager or build step.
 
 - A modern browser with JavaScript enabled
-- Python 3.8 or later for the command-line client and test suite
 - Node.js for the JavaScript syntax checks in the test suite
 - A Google account and Google Cloud project only if Google Sheets synchronization is required
 
@@ -259,47 +262,6 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 4. Choose the repository's `extension/` directory.
 5. Pin the extension if desired.
 
-## Command-Line Client
-
-The command-line client stores its data locally at `~/.config/finance/finance_data.json`.
-
-```bash
-# Show current metrics and debt projections
-python3 finance_client.py metrics
-
-# Record an allowance
-python3 finance_client.py allowance 250 -n "Daily allowance"
-
-# Record an expense
-python3 finance_client.py log 45 -c Meal -n "Lunch"
-
-# Use a quick action
-python3 finance_client.py quick "jeep_to_school"
-
-# List recent transactions
-python3 finance_client.py list
-```
-
-Debt and stash commands are also available:
-
-```bash
-# Debts
-python3 finance_client.py utang
-python3 finance_client.py utang add "Mark" 60 --direction "I Owe"
-python3 finance_client.py utang settle <DEBT_ID> --amount 30
-python3 finance_client.py utang settle <DEBT_ID>
-python3 finance_client.py utang delete <DEBT_ID>
-
-# Stash vault
-python3 finance_client.py stash
-python3 finance_client.py stash add 50 -n "Emergency reserve"
-python3 finance_client.py stash balance -n "Saved balance"
-python3 finance_client.py stash release <STASH_ID> --amount 30
-python3 finance_client.py stash delete <STASH_ID>
-```
-
-Run `python3 finance_client.py --help` for the complete command reference.
-
 ## Project Structure
 
 ```text
@@ -311,7 +273,6 @@ Run `python3 finance_client.py --help` for the complete command reference.
 │   ├── popup.js
 │   ├── background.js
 │   └── google_sync.js
-├── finance_client.py           # Offline command-line client
 ├── package_extension.sh        # Creates Firefox XPI and ZIP packages
 ├── test_tracker.py             # Automated validation suite
 ├── FEATURE_GUIDE.md            # Detailed feature documentation
@@ -324,7 +285,6 @@ Run `python3 finance_client.py --help` for the complete command reference.
 ```text
 docs/                  Web app, PWA assets, and GitHub Pages source
 extension/             Browser extension source
-finance_client.py     Offline Python CLI
 test_tracker.py       Automated validation suite
 package_extension.sh   Extension packaging script
 .github/               Actions, issue templates, and contributor config
@@ -333,13 +293,7 @@ README.md              Project documentation
 
 ## Testing
 
-Run the automated checks from the repository root:
-
-```bash
-python3 test_tracker.py
-```
-
-The suite checks Python syntax, JavaScript syntax, extension assets and manifest configuration, and core finance calculations.
+Automated checks run through GitHub Actions on pushes and pull requests. The suite checks JavaScript syntax, extension assets and manifest configuration, and core finance calculations.
 
 The same command runs automatically for pushes and pull requests through the [GitHub Actions test workflow](.github/workflows/test.yml).
 

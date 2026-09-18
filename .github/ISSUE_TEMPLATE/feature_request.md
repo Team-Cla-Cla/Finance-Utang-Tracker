@@ -22,7 +22,6 @@ Describe alternatives or workarounds you have considered.
 
 - [ ] Web app or PWA
 - [ ] Browser extension
-- [ ] Python CLI
 - [ ] All platforms
 
 ## Additional context

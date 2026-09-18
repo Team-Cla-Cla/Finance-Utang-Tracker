@@ -2,7 +2,7 @@
 ## Personal Finance & Utang Tracker Architecture
 
 **System Name:** Personal Finance & Utang Tracker  
-**Target Environments:** Cross-Browser WebExtension (Firefox, Chromium, LibreWolf, Brave), CLI Client, Headless Sync Service  
+**Target Environments:** Responsive Web App/PWA and cross-browser WebExtension (Firefox, Chromium, LibreWolf, Brave)
 **Architecture Style:** Domain-Driven Design (DDD) with Hexagonal Architecture (Ports and Adapters)  
 **Storage Model:** Offline-First with Persistent Local Outbox and Cloud Reconciliation  
 
@@ -239,7 +239,7 @@ To ensure longevity and maintainability, the application follows strict hexagona
 ```
 +-------------------------------------------------------------------------------+
 |                             PRESENTATION ADAPTERS                             |
-|    [Browser Popup WebExtension]     [Terminal CLI]     [Desktop App Window]   |
+|    [Web App / PWA]     [Browser Popup WebExtension]     [Desktop App Window]   |
 +-------------------------------------------------------------------------------+
                                       |
                                       v

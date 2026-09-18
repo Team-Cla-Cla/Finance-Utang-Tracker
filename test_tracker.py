@@ -8,7 +8,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 EXT_DIR = BASE_DIR / "extension"
-PY_FILE = BASE_DIR / "finance_client.py"
 
 
 def test_js_syntax():
@@ -16,13 +15,6 @@ def test_js_syntax():
     for js_file in [EXT_DIR / "popup.js", EXT_DIR / "google_sync.js"]:
         res = subprocess.run(["node", "-c", str(js_file)], capture_output=True, text=True)
         assert res.returncode == 0, f"JS Syntax Error in {js_file.name}:\n{res.stderr}"
-    print("PASSED")
-
-
-def test_python_syntax():
-    print("[*] Testing Python syntax (finance_client.py)...", end=" ")
-    res = subprocess.run(["python3", "-m", "py_compile", str(PY_FILE)], capture_output=True, text=True)
-    assert res.returncode == 0, f"Python Syntax Error:\n{res.stderr}"
     print("PASSED")
 
 
@@ -443,7 +435,6 @@ def main():
     print("Running project test suite...")
     print("-" * 50)
     test_js_syntax()
-    test_python_syntax()
     test_decimal_and_integer_precision()
     test_financial_and_utang_math()
     test_pautang_cash_linking()

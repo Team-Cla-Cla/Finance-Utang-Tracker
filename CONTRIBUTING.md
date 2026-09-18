@@ -39,7 +39,7 @@ Then open <http://localhost:8000>.
 - Keep changes focused and consistent with existing patterns.
 - Update related documentation when behavior or setup changes.
 - Add or update tests for changed functionality.
-- Keep the web app, extension, and CLI behavior consistent where they implement the same feature.
+- Keep the web app and extension behavior consistent where they implement the same feature.
 - Avoid adding dependencies unless they are necessary and documented.
 
 ## Pull requests
