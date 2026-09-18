@@ -1,29 +1,34 @@
+<div align="center">
+
+<img src="docs/icons/icon.svg" alt="Finance & Utang Tracker logo" width="96">
+
 # Finance & Utang Tracker
+
+**An offline-first personal finance and debt tracker for everyday budgeting.**
 
 [![Live Demo](https://img.shields.io/badge/demo-live-2ea44f?style=flat-square)](https://team-cla-cla.github.io/Finance-Utang-Tracker/)
 [![License](https://img.shields.io/github/license/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](LICENSE)
 [![Last Commit](https://img.shields.io/github/last-commit/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
 [![Commit Activity](https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
-[![Issues](https://img.shields.io/github/issues/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues)
-[![Forks](https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
 [![Stars](https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers)
+[![Forks](https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
 [![Top Language](https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
-[![Contributors](https://img.shields.io/github/contributors/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/graphs/contributors)
-[![Repository Size](https://img.shields.io/github/repo-size/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
 
-Finance & Utang Tracker is an offline-first personal finance, allowance, and debt tracker for students and daily commuters. It is available as:
+[Live Demo](https://team-cla-cla.github.io/Finance-Utang-Tracker/) ·
+[Report a Bug](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new) ·
+[Request a Feature](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues/new)
 
-- A responsive web app and installable Progressive Web App (PWA)
-- A cross-browser extension for Firefox, Chrome, Brave, and Edge
-- A standalone Python command-line client
+</div>
 
-The application stores data locally and can optionally synchronize it directly with a Google Sheet through the Google Sheets API. It does not require an application server, database, or third-party hosting service.
+Finance & Utang Tracker helps students and daily commuters record allowances, expenses, debts, repayments, and savings without depending on a hosted backend. It is available as a responsive web app, installable Progressive Web App (PWA), cross-browser extension, and Python command-line client.
 
-The badges above use live GitHub and Shields.io endpoints, so stars, forks, issues, contributors, language, repository size, and commit information update automatically.
+The application stores data locally by default. Google Sheets synchronization is optional and connects directly from the client to the user's own Google account.
 
 ## Contents
 
 - [Features](#features)
+- [Choose Your Platform](#choose-your-platform)
+- [Privacy](#privacy)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Fork and Deploy Your Own Copy](#fork-and-deploy-your-own-copy)
@@ -32,30 +37,61 @@ The badges above use live GitHub and Shields.io endpoints, so stars, forks, issu
 - [Command-Line Client](#command-line-client)
 - [Project Structure](#project-structure)
 - [Testing](#testing)
+- [Roadmap](#roadmap)
 - [Contributing](#contributing)
 - [Support](#support)
 - [License](#license)
 
 ## Features
 
-- Record allowances, expenses, debts, repayments, and settlements
-- Track money owed to others separately from money others owe you
-- Calculate daily balances, debt exposure, and pay-now projections
-- Save money in a separate stash vault and release it when needed
-- Create customizable quick actions for common expenses
-- Continue working offline and synchronize queued changes when connected
-- Use a dark, responsive interface on desktop and mobile devices
-- Sync directly with a Google Sheet using OAuth 2.0
+| Area | Description |
+| --- | --- |
+| Daily finances | Record allowances, expenses, balances, and spending categories |
+| Debt tracking | Track money owed to others and money others owe you |
+| Settlements | Record partial or full repayments without losing history |
+| Stash vault | Separate savings from spendable cash and release it when needed |
+| Offline-first | Continue working locally and synchronize queued changes later |
+| Google Sheets | Optionally sync directly with a private spreadsheet |
+| Quick actions | Create shortcuts for recurring transport and meal expenses |
+| Responsive UI | Use the same application on desktop, mobile, or a browser toolbar |
+
+## Choose Your Platform
+
+| Platform | Best for | Start here |
+| --- | --- | --- |
+| Web app / PWA | Desktop and mobile use | [Deploy the web app](#fork-and-deploy-your-own-copy) |
+| Browser extension | Fast logging from a browser toolbar | [Install the extension](#browser-extension-installation) |
+| CLI | Terminal-based workflows and automation | [Use the CLI](#command-line-client) |
+
+## Privacy
+
+- Financial records are stored locally by default.
+- Google Sheets synchronization is optional.
+- The project does not require a project-owned backend or database.
+- OAuth tokens and spreadsheet identifiers must not be committed to the repository.
+- When synchronization is enabled, data is sent directly to Google APIs using the user's account.
 
 ## Demo
 
-The original project deployment is available at:
+Try the hosted web app:
 
 <https://team-cla-cla.github.io/Finance-Utang-Tracker/>
 
-After forking the repository, use your own GitHub Pages URL instead:
+After forking the repository, use your own GitHub Pages URL:
 
 `https://<your-github-username>.github.io/<your-repository-name>/`
+
+## Architecture
+
+```text
+Web app / PWA / Browser extension / CLI
+                    |
+             Local application state
+                    |
+        Optional Google Sheets synchronization
+```
+
+See [DDD.md](DDD.md) for domain and architecture notes, and [FEATURE_GUIDE.md](FEATURE_GUIDE.md) for detailed behavior.
 
 ## Requirements
 
@@ -227,6 +263,14 @@ python3 test_tracker.py
 ```
 
 The suite checks Python syntax, JavaScript syntax, extension assets and manifest configuration, and core finance calculations.
+
+## Roadmap
+
+- [ ] Add automated GitHub Actions testing
+- [ ] Add import and export support
+- [ ] Add screenshots and short usage demonstrations
+- [ ] Improve extension distribution instructions
+- [ ] Support additional spreadsheet providers
 
 ## Contributing
 
