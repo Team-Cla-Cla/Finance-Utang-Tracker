@@ -8,6 +8,8 @@
 [![Forks](https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
 [![Stars](https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers)
 [![Top Language](https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
+[![Contributors](https://img.shields.io/github/contributors/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/graphs/contributors)
+[![Repository Size](https://img.shields.io/github/repo-size/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
 
 Finance & Utang Tracker is an offline-first personal finance, allowance, and debt tracker for students and daily commuters. It is available as:
 
@@ -16,6 +18,8 @@ Finance & Utang Tracker is an offline-first personal finance, allowance, and deb
 - A standalone Python command-line client
 
 The application stores data locally and can optionally synchronize it directly with a Google Sheet through the Google Sheets API. It does not require an application server, database, or third-party hosting service.
+
+The badges above use live GitHub and Shields.io endpoints, so stars, forks, issues, contributors, language, repository size, and commit information update automatically.
 
 ## Contents
 
