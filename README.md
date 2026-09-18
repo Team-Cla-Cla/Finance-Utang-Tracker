@@ -21,6 +21,10 @@ The application stores data locally by default. Google Sheets synchronization is
 - [Features](#features)
 - [Choose Your Platform](#choose-your-platform)
 - [Privacy](#privacy)
+- [Tools & Technologies](#tools--technologies)
+- [Available Clients](#available-clients)
+- [Project Workflow](#project-workflow)
+- [Deployment and Automation](#deployment-and-automation)
 - [Demo](#demo)
 - [Requirements](#requirements)
 - [Fork and Deploy Your Own Copy](#fork-and-deploy-your-own-copy)
@@ -28,6 +32,7 @@ The application stores data locally by default. Google Sheets synchronization is
 - [Browser Extension Installation](#browser-extension-installation)
 - [Command-Line Client](#command-line-client)
 - [Project Structure](#project-structure)
+- [Repository Map](#repository-map)
 - [Testing](#testing)
 - [Roadmap](#roadmap)
 - [Repository Metrics](#repository-metrics)
@@ -49,15 +54,58 @@ The application stores data locally by default. Google Sheets synchronization is
 | Automated tests | GitHub Actions |
 | Contributions | Welcome |
 
-## Technology Stack
+## Tools & Technologies
 
-| Technology | Role |
+| Category | Tool | Purpose |
 | --- | --- |
-| HTML, CSS, JavaScript | Web app and browser extension |
-| Python | Offline command-line client and test suite |
-| Google Sheets API | Optional direct synchronization |
-| Service Worker | Offline PWA asset caching |
-| GitHub Pages | Static web app hosting |
+| Frontend | HTML, CSS, JavaScript | Web app and browser extension interface |
+| Local storage | Browser Storage API | Offline-first transaction and settings storage |
+| PWA | Service Worker | Offline caching and installable web app support |
+| Browser extension | WebExtensions API | Firefox, Chrome, Brave, and Edge integration |
+| CLI | Python 3 | Terminal-based finance tracking |
+| Cloud sync | Google Sheets API v4 | Optional direct spreadsheet synchronization |
+| Authentication | Google OAuth 2.0 | User-authorized Google account access |
+| Hosting | GitHub Pages | Static web app deployment from `docs/` |
+| Automation | GitHub Actions | Automated tests on pushes and pull requests |
+| Dependency updates | Dependabot | Monthly GitHub Actions dependency checks |
+| Packaging | Bash and ZIP | Firefox XPI and extension archive creation |
+| Version control | Git and GitHub | Source control, collaboration, and releases |
+
+## Available Clients
+
+| Client | Technology | Use case | Distribution |
+| --- | --- | --- | --- |
+| Web app / PWA | HTML, CSS, JavaScript, Service Worker | Desktop and mobile budgeting | GitHub Pages or local server |
+| Browser extension | WebExtensions API | Fast logging from the browser toolbar | Temporary or unpacked installation |
+| CLI | Python 3 | Terminal workflows and automation | Clone and run locally |
+| Google Sheets sync | OAuth 2.0 and Sheets API | Optional multi-device data synchronization | Enabled from Settings |
+
+## Project Workflow
+
+```text
+                         GitHub repository
+                                  |
+                 +----------------+----------------+
+                 |                                 |
+          GitHub Actions                    GitHub Pages
+          Automated tests                   Hosted web app
+                 |                                 |
+                 +----------------+----------------+
+                                  |
+         Web app / PWA / Browser extension / CLI
+                                  |
+                     Local application state
+                                  |
+              Optional Google Sheets synchronization
+```
+
+## Deployment and Automation
+
+- **GitHub Pages** hosts the static PWA from the `docs/` directory.
+- **GitHub Actions** runs `python3 test_tracker.py` on pushes and pull requests.
+- **Dependabot** checks GitHub Actions dependencies monthly.
+- **Bash packaging** creates Firefox `.xpi` and ZIP archives.
+- **No build server is required** for the web app or browser extension.
 
 ## Features
 
@@ -271,6 +319,18 @@ Run `python3 finance_client.py --help` for the complete command reference.
 └── LICENSE                    # MIT license
 ```
 
+## Repository Map
+
+```text
+docs/                  Web app, PWA assets, and GitHub Pages source
+extension/             Browser extension source
+finance_client.py     Offline Python CLI
+test_tracker.py       Automated validation suite
+package_extension.sh   Extension packaging script
+.github/               Actions, issue templates, and contributor config
+README.md              Project documentation
+```
+
 ## Testing
 
 Run the automated checks from the repository root:
@@ -285,7 +345,6 @@ The same command runs automatically for pushes and pull requests through the [Gi
 
 ## Roadmap
 
-- [ ] Add automated GitHub Actions testing
 - [ ] Add import and export support
 - [ ] Add screenshots and short usage demonstrations
 - [ ] Improve extension distribution instructions
