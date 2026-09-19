@@ -1,9 +1,3 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
 # Local credentials & configs
 .env
 local_config.json

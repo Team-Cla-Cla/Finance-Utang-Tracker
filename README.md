@@ -195,7 +195,7 @@ The `docs/` directory is already a static web app, so no build command is needed
 Because browsers restrict some features when files are opened directly from disk, serve the repository with a local HTTP server:
 
 ```bash
-python3 -m http.server 8000 --directory docs
+npx --yes http-server docs -p 8000
 ```
 
 Open <http://localhost:8000> in a browser.
@@ -274,7 +274,6 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   ├── background.js
 │   └── google_sync.js
 ├── package_extension.sh        # Creates Firefox XPI and ZIP packages
-├── test_tracker.py             # Automated validation suite
 ├── FEATURE_GUIDE.md            # Detailed feature documentation
 ├── DDD.md                     # Domain and architecture notes
 └── LICENSE                    # MIT license
@@ -285,7 +284,6 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 ```text
 docs/                  Web app, PWA assets, and GitHub Pages source
 extension/             Browser extension source
-test_tracker.py       Automated validation suite
 package_extension.sh   Extension packaging script
 .github/               Actions, issue templates, and contributor config
 README.md              Project documentation
@@ -293,7 +291,7 @@ README.md              Project documentation
 
 ## Testing
 
-Automated checks run through GitHub Actions on pushes and pull requests. The suite checks JavaScript syntax, extension assets and manifest configuration, and core finance calculations.
+Automated checks run through GitHub Actions on pushes and pull requests. The workflow checks JavaScript syntax and required GUI assets.
 
 The same command runs automatically for pushes and pull requests through the [GitHub Actions test workflow](.github/workflows/test.yml).
 
@@ -321,7 +319,7 @@ Contributions are welcome. To propose a change:
 1. Fork the repository.
 2. Create a focused branch for your change.
 3. Make the change and add or update tests where appropriate.
-4. Run `python3 test_tracker.py`.
+4. Run the automated checks locally if applicable.
 5. Open a pull request with a description of the problem, the solution, and any setup needed to verify it.
 
 Please keep changes focused, avoid committing personal data or credentials, and preserve the offline-first behavior.

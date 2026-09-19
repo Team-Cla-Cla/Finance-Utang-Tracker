@@ -18,18 +18,12 @@ cd Finance-Utang-Tracker
 git checkout -b feature/short-description
 ```
 
-The web app and extension have no package installation step. Python 3.8 or later and Node.js are required for the test suite.
-
-Run the tests before submitting changes:
-
-```bash
-python3 test_tracker.py
-```
+The web app and extension have no package installation step. Node.js is used for JavaScript syntax checks in CI.
 
 To run the web app locally:
 
 ```bash
-python3 -m http.server 8000 --directory docs
+npx --yes http-server docs -p 8000
 ```
 
 Then open <http://localhost:8000>.
@@ -47,7 +41,7 @@ Then open <http://localhost:8000>.
 Before opening a pull request:
 
 1. Rebase or update your branch with the current default branch.
-2. Run `python3 test_tracker.py`.
+2. Run the JavaScript syntax checks locally if applicable.
 3. Check the diff for credentials, personal data, generated files, and unrelated changes.
 4. Describe the problem, solution, testing performed, and any user-facing behavior changes.
 

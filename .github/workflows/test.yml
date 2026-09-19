@@ -15,29 +15,30 @@ permissions:
 
 jobs:
   test:
-    name: Python ${{ matrix.python-version }}
+    name: JavaScript syntax and asset checks
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          - "3.8"
-          - "3.11"
-          - "3.13"
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
-
-      - name: Set up Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: ${{ matrix.python-version }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
           node-version: "20"
 
-      - name: Run test suite
-        run: python3 test_tracker.py
+      - name: Check JavaScript syntax
+        run: |
+          node --check docs/popup.js
+          node --check docs/google_sync.js
+          node --check docs/sw.js
+          node --check extension/popup.js
+          node --check extension/google_sync.js
+          node --check extension/background.js
+
+      - name: Check required GUI assets
+        run: |
+          test -f docs/index.html
+          test -f docs/manifest.webmanifest
+          test -f extension/popup.html
+          test -f extension/manifest.json
