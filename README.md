@@ -55,16 +55,16 @@ The application stores data locally by default. Google Sheets synchronization is
 ## Tools & Technologies
 
 <div align="center">
-<img src="https://cdn.simpleicons.org/html5/E34F26" width="42" height="42" alt="HTML5" title="HTML5">
-<img src="https://cdn.simpleicons.org/css3/1572B6" width="42" height="42" alt="CSS3" title="CSS3">
-<img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="42" height="42" alt="JavaScript" title="JavaScript">
-<img src="https://cdn.simpleicons.org/pwa/5A0FC8" width="42" height="42" alt="PWA" title="PWA">
-<img src="https://cdn.simpleicons.org/firefoxbrowser/FF7139" width="42" height="42" alt="WebExtensions" title="WebExtensions">
-<img src="https://cdn.simpleicons.org/googlesheets/34A853" width="42" height="42" alt="Google Sheets" title="Google Sheets">
-<img src="https://cdn.simpleicons.org/google/4285F4" width="42" height="42" alt="Google OAuth" title="Google OAuth">
-<img src="https://cdn.simpleicons.org/github/181717" width="42" height="42" alt="GitHub Pages" title="GitHub Pages">
-<img src="https://cdn.simpleicons.org/githubactions/2088FF" width="42" height="42" alt="GitHub Actions" title="GitHub Actions">
-<img src="https://cdn.simpleicons.org/gnubash/4EAA25" width="42" height="42" alt="Bash" title="Bash">
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" title="HTML5">
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" title="CSS3">
+<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111111" alt="JavaScript" title="JavaScript">
+<img src="https://img.shields.io/badge/PWA-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white" alt="PWA" title="PWA">
+<img src="https://img.shields.io/badge/WebExtensions-FF7139?style=for-the-badge&logo=firefoxbrowser&logoColor=white" alt="WebExtensions" title="WebExtensions">
+<img src="https://img.shields.io/badge/Google_Sheets-34A853?style=for-the-badge&logo=googlesheets&logoColor=white" alt="Google Sheets" title="Google Sheets">
+<img src="https://img.shields.io/badge/Google_OAuth-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Google OAuth" title="Google OAuth">
+<img src="https://img.shields.io/badge/GitHub_Pages-181717?style=for-the-badge&logo=github&logoColor=white" alt="GitHub Pages" title="GitHub Pages">
+<img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions" title="GitHub Actions">
+<img src="https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white" alt="Bash" title="Bash">
 </div>
 
 ## Available Clients
