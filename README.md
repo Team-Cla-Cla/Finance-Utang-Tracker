@@ -283,7 +283,7 @@ README.md              Project documentation
 
 Automated checks run through GitHub Actions on pushes and pull requests. The workflow checks JavaScript syntax and required GUI assets.
 
-The same command runs automatically for pushes and pull requests through the [GitHub Actions test workflow](.github/workflows/test.yml).
+The [GitHub Actions workflow](.github/workflows/test.yml) runs automatically for pushes and pull requests.
 
 ## Roadmap
 
