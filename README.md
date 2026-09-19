@@ -67,15 +67,15 @@ The application stores data locally by default. Google Sheets synchronization is
 
 | Layer | Technology | Role |
 | --- | --- | --- |
-| Interface | HTML5 · CSS3 · JavaScript | Responsive web app and extension UI |
-| Offline storage | Browser Storage API | Local-first transactions, settings, and sync queue |
-| Installability | Service Worker · PWA | Offline caching and home-screen installation |
-| Browser integration | WebExtensions API | Firefox, Chrome, Brave, and Edge support |
-| Cloud sync | Google Sheets API v4 | Optional synchronization to the user's spreadsheet |
-| Authentication | Google OAuth 2.0 | User-authorized access to Google services |
-| Delivery | GitHub Pages | Static hosting for the `docs/` web app |
-| Quality | GitHub Actions | Automated browser-app validation |
-| Packaging | Bash · ZIP · XPI | Browser extension distribution |
+| Interface | <img src="https://cdn.simpleicons.org/html5/E34F26" width="18" alt="HTML5"> <img src="https://cdn.simpleicons.org/css3/1572B6" width="18" alt="CSS3"> <img src="https://cdn.simpleicons.org/javascript/F7DF1E" width="18" alt="JavaScript"> HTML5 · CSS3 · JavaScript | Responsive web app and extension UI |
+| Offline storage | <img src="https://cdn.simpleicons.org/webextensions/FF7139" width="18" alt="Browser Storage"> Browser Storage API | Local-first transactions, settings, and sync queue |
+| Installability | <img src="https://cdn.simpleicons.org/pwa/5A0FC8" width="18" alt="PWA"> <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" alt="Service Worker"> Service Worker · PWA | Offline caching and home-screen installation |
+| Browser integration | <img src="https://cdn.simpleicons.org/firefoxbrowser/FF7139" width="18" alt="Firefox"> <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" alt="Chrome"> WebExtensions API | Firefox, Chrome, Brave, and Edge support |
+| Cloud sync | <img src="https://cdn.simpleicons.org/googlesheets/34A853" width="18" alt="Google Sheets"> Google Sheets API v4 | Optional synchronization to the user's spreadsheet |
+| Authentication | <img src="https://cdn.simpleicons.org/google/4285F4" width="18" alt="Google"> Google OAuth 2.0 | User-authorized access to Google services |
+| Delivery | <img src="https://cdn.simpleicons.org/github/181717" width="18" alt="GitHub"> GitHub Pages | Static hosting for the `docs/` web app |
+| Quality | <img src="https://cdn.simpleicons.org/githubactions/2088FF" width="18" alt="GitHub Actions"> GitHub Actions | Automated browser-app validation |
+| Packaging | <img src="https://cdn.simpleicons.org/gnubash/4EAA25" width="18" alt="Bash"> Bash · ZIP · XPI | Browser extension distribution |
 
 ## Available Clients
 
