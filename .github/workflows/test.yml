@@ -49,5 +49,11 @@ jobs:
           test -f extension/manifest.json
           test -f extension/shared/domain.js
 
+      - name: Check synchronized client copies
+        run: |
+          cmp --silent shared/domain.js docs/shared/domain.js
+          cmp --silent shared/domain.js extension/shared/domain.js
+          cmp --silent docs/popup.js extension/popup.js
+
       - name: Run domain tests
         run: node tests/domain.test.js

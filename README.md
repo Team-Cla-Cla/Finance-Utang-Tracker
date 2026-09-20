@@ -158,6 +158,7 @@ See [DDD.md](DDD.md) for domain and architecture notes, and [FEATURE_GUIDE.md](F
 Both clients load the same pure, non-module domain service (`shared/domain.js`, copied into
 each static client package) before their UI scripts. Settings also includes a persisted
 **Pause Live Conway Animation** toggle for stopping and resuming background animation work.
+The CI checks that the canonical domain service and both client controllers remain synchronized.
 
 ## Requirements
 

@@ -268,6 +268,7 @@ application grows:
 |   - RecordExpenseUseCase               - SettleDebtUseCase                    |
 |   - DepositStashUseCase                - ReconcileSheetsSyncUseCase           |
 |   - ComputeProjectionsUseCase          - RunDailyRolloverUseCase              |
+|   - UpdateSettingsUseCase              - MergeCloudStateUseCase               |
 +-------------------------------------------------------------------------------+
                                       |
                                       v

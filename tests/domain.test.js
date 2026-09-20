@@ -142,6 +142,33 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(merged.state.transactions.length, 2);
   assert.equal(merged.state.presets.length, 2);
   assert.equal(merged.state.auditLog.length, 2);
+  assert.equal(domain.updateSettings({}, { disableBgAnimation: true }).disableBgAnimation, true);
+  const ignoredSetting = domain.updateSettings({ dailyRollover: true }, { unknown: "ignored" });
+  assert.equal(ignoredSetting.dailyRollover, true);
+  assert.equal(Object.prototype.hasOwnProperty.call(ignoredSetting, "unknown"), false);
+  const unchangedInput = { transactions: [{ id: "same" }], debts: [], stashes: [], presets: [], auditLog: [] };
+  const unchanged = domain.mergeCloudData(unchangedInput, {});
+  assert.equal(unchanged.updated, false);
+  assert.equal(unchanged.state.transactions.length, 1);
+  assert.notEqual(unchanged.state.transactions, unchangedInput.transactions);
+  assert.equal(domain.unstashState([], [], [], "missing").item, null);
+  assert.equal(domain.deleteStash([], [], "missing").item, null);
 }
+
+assert.equal(
+  fs.readFileSync("shared/domain.js", "utf8"),
+  fs.readFileSync("docs/shared/domain.js", "utf8"),
+  "PWA domain copy must match canonical service"
+);
+assert.equal(
+  fs.readFileSync("shared/domain.js", "utf8"),
+  fs.readFileSync("extension/shared/domain.js", "utf8"),
+  "extension domain copy must match canonical service"
+);
+assert.equal(
+  fs.readFileSync("docs/popup.js", "utf8"),
+  fs.readFileSync("extension/popup.js", "utf8"),
+  "PWA and extension controllers must match"
+);
 
 console.log("Domain tests passed.");
