@@ -94,6 +94,29 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(removedDebt.transactions.length, 0);
   assert.equal(removedDebt.syncQueue.at(-2).op, "DEL_DEBT");
   assert.equal(removedDebt.syncQueue.at(-1).op, "DEL_TX");
+  const stashTransaction = { id: "tx-stash", type: "Allowance", amount: 50 };
+  const unstashed = domain.unstashState(
+    [{ id: "stash-1", amount: 50, note: "Reserve", date: "2026-09-24" }],
+    [],
+    [],
+    "stash-1",
+    stashTransaction,
+    "unstash-time"
+  );
+  assert.equal(unstashed.item.id, "stash-1");
+  assert.equal(unstashed.stashes.length, 0);
+  assert.equal(unstashed.transactions[0].id, "tx-stash");
+  assert.equal(unstashed.syncQueue.at(-2).op, "ADD_TX");
+  assert.equal(unstashed.syncQueue.at(-1).op, "SYNC_STASHES");
+  const discarded = domain.deleteStash(
+    [{ id: "stash-2", amount: 25, note: "Emergency", date: "2026-09-24" }],
+    unstashed.syncQueue,
+    "stash-2",
+    "discard-time"
+  );
+  assert.equal(discarded.item.id, "stash-2");
+  assert.equal(discarded.stashes.length, 0);
+  assert.equal(discarded.syncQueue.at(-1).data.status, "Discarded");
 }
 
 console.log("Domain tests passed.");

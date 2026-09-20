@@ -200,6 +200,35 @@
     };
   }
 
+  function unstashState(stashes, transactions, queue, id, transaction, timestamp) {
+    var result = unstash(stashes, id);
+    if (!result.item) return { item: null, stashes: stashes || [], transactions: transactions || [], syncQueue: queue || [] };
+    var nextTransactions = transactions || [];
+    var nextQueue = queue || [];
+    if (transaction) {
+      nextTransactions = [transaction].concat(nextTransactions);
+      nextQueue = enqueue(nextQueue, { op: "ADD_TX", data: transaction }, timestamp);
+    }
+    nextQueue = enqueue(nextQueue, {
+      op: "SYNC_STASHES",
+      data: { id: id, status: "Unstashed", amount: result.item.amount, note: result.item.note || "Reserve", date: result.item.date }
+    }, timestamp);
+    return { item: result.item, stashes: result.stashes, transactions: nextTransactions, syncQueue: nextQueue };
+  }
+
+  function deleteStash(stashes, queue, id, timestamp) {
+    var result = unstash(stashes, id);
+    if (!result.item) return { item: null, stashes: stashes || [], syncQueue: queue || [] };
+    return {
+      item: result.item,
+      stashes: result.stashes,
+      syncQueue: enqueue(queue, {
+        op: "SYNC_STASHES",
+        data: { id: id, status: "Discarded", amount: result.item.amount, note: result.item.note || "Reserve", date: result.item.date }
+      }, timestamp)
+    };
+  }
+
   root.FinanceDomain = {
     parseAmount: parseAmount,
     getLocalDateStr: getLocalDateStr,
@@ -213,6 +242,8 @@
     deleteTransaction: deleteTransaction,
     addDebt: addDebt,
     settleDebtState: settleDebtState,
-    deleteDebt: deleteDebt
+    deleteDebt: deleteDebt,
+    unstashState: unstashState,
+    deleteStash: deleteStash
   };
 }(typeof window !== "undefined" ? window : this));

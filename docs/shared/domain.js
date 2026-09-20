@@ -157,7 +157,10 @@
     if (index < 0) return { debt: null, actualPayment: 0, debts: list, transactions: transactions || [], syncQueue: queue || [] };
     var current = list[index];
     var settlement = settleDebt(current, payment);
-    var updatedDebt = Object.assign({}, current, { paid: settlement.paid, status: settlement.status });
+    var updatedDebt = Object.assign({}, current, {
+      paid: settlement.paid,
+      status: settlement.status
+    });
     var nextDebts = list.slice();
     nextDebts[index] = updatedDebt;
     var nextTransactions = transactions || [];
@@ -166,8 +169,17 @@
       nextTransactions = [transaction].concat(nextTransactions);
       nextQueue = enqueue(nextQueue, { op: "ADD_TX", data: transaction }, timestamp);
     }
-    nextQueue = enqueue(nextQueue, { op: "SETTLE_DEBT", data: { id: updatedDebt.id, payAmt: settlement.actualPayment, newPaid: updatedDebt.paid, status: updatedDebt.status } }, timestamp);
-    return { debt: updatedDebt, actualPayment: settlement.actualPayment, debts: nextDebts, transactions: nextTransactions, syncQueue: nextQueue };
+    nextQueue = enqueue(nextQueue, {
+      op: "SETTLE_DEBT",
+      data: { id: updatedDebt.id, payAmt: settlement.actualPayment, newPaid: updatedDebt.paid, status: updatedDebt.status }
+    }, timestamp);
+    return {
+      debt: updatedDebt,
+      actualPayment: settlement.actualPayment,
+      debts: nextDebts,
+      transactions: nextTransactions,
+      syncQueue: nextQueue
+    };
   }
 
   function deleteDebt(debts, transactions, queue, id, deleteLinkedTransaction, timestamp) {
@@ -179,7 +191,42 @@
       nextTransactions = nextTransactions.filter(function (transaction) { return transaction.id !== linked.id; });
       nextQueue = enqueue(nextQueue, { op: "DEL_TX", data: { id: linked.id } }, timestamp);
     }
-    return { found: found, linkedTransaction: linked, debts: (debts || []).filter(function (debt) { return debt.id !== id; }), transactions: nextTransactions, syncQueue: nextQueue };
+    return {
+      found: found,
+      linkedTransaction: linked,
+      debts: (debts || []).filter(function (debt) { return debt.id !== id; }),
+      transactions: nextTransactions,
+      syncQueue: nextQueue
+    };
+  }
+
+  function unstashState(stashes, transactions, queue, id, transaction, timestamp) {
+    var result = unstash(stashes, id);
+    if (!result.item) return { item: null, stashes: stashes || [], transactions: transactions || [], syncQueue: queue || [] };
+    var nextTransactions = transactions || [];
+    var nextQueue = queue || [];
+    if (transaction) {
+      nextTransactions = [transaction].concat(nextTransactions);
+      nextQueue = enqueue(nextQueue, { op: "ADD_TX", data: transaction }, timestamp);
+    }
+    nextQueue = enqueue(nextQueue, {
+      op: "SYNC_STASHES",
+      data: { id: id, status: "Unstashed", amount: result.item.amount, note: result.item.note || "Reserve", date: result.item.date }
+    }, timestamp);
+    return { item: result.item, stashes: result.stashes, transactions: nextTransactions, syncQueue: nextQueue };
+  }
+
+  function deleteStash(stashes, queue, id, timestamp) {
+    var result = unstash(stashes, id);
+    if (!result.item) return { item: null, stashes: stashes || [], syncQueue: queue || [] };
+    return {
+      item: result.item,
+      stashes: result.stashes,
+      syncQueue: enqueue(queue, {
+        op: "SYNC_STASHES",
+        data: { id: id, status: "Discarded", amount: result.item.amount, note: result.item.note || "Reserve", date: result.item.date }
+      }, timestamp)
+    };
   }
 
   root.FinanceDomain = {
@@ -195,6 +242,8 @@
     deleteTransaction: deleteTransaction,
     addDebt: addDebt,
     settleDebtState: settleDebtState,
-    deleteDebt: deleteDebt
+    deleteDebt: deleteDebt,
+    unstashState: unstashState,
+    deleteStash: deleteStash
   };
 }(typeof window !== "undefined" ? window : this));

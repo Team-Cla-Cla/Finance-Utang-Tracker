@@ -918,16 +918,10 @@ function addStash(amount, note, date) {
 }
 
 function unstash(stashId) {
-  const idx = appState.stashes.findIndex(s => s.id === stashId);
-  if (idx === -1) return;
-
-  const result = FinanceDomain.unstash(appState.stashes, stashId);
-  const item = result.item;
+  const item = appState.stashes.find(s => s.id === stashId);
   if (!item) return;
   const amt = Number(item.amount) || 0;
   const cleanNote = item.note || "Reserve";
-
-  appState.stashes = result.stashes;
 
   const txId = "tx_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
   const tx = {
@@ -940,9 +934,11 @@ function unstash(stashId) {
     notes: `Unstashed: ${cleanNote}`
   };
 
-  appState.transactions.unshift(tx);
-  queueSyncItem({ op: "ADD_TX", data: tx });
-  queueSyncItem({ op: "SYNC_STASHES", data: { id: stashId, status: "Unstashed", amount: amt, note: cleanNote, date: getLocalDateStr() } });
+  const result = FinanceDomain.unstashState(appState.stashes, appState.transactions, appState.syncQueue, stashId, tx);
+  if (!result.item) return;
+  appState.stashes = result.stashes;
+  appState.transactions = result.transactions;
+  appState.syncQueue = result.syncQueue;
   persistState();
   renderUI();
   showStatus(`Added ${amt.toFixed(2)} back to today's finance`, false);
@@ -950,9 +946,8 @@ function unstash(stashId) {
 }
 
 function deleteStash(stashId) {
-  const idx = appState.stashes.findIndex(s => s.id === stashId);
-  if (idx === -1) return;
-  const item = appState.stashes[idx];
+  const item = appState.stashes.find(s => s.id === stashId);
+  if (!item) return;
   const amt = Number(item.amount) || 0;
 
   const refund = confirm(`Delete Stash Record (₱${amt.toFixed(2)})?\n\n- Click OK to REFUND ₱${amt.toFixed(2)} back to your spendable cash.\n- Click CANCEL to choose whether to permanently discard without refunding.`);
@@ -962,7 +957,10 @@ function deleteStash(stashId) {
   }
 
   if (confirm(`Permanently discard stash record (₱${amt.toFixed(2)}) WITHOUT returning funds to spendable cash?`)) {
-    appState.stashes.splice(idx, 1);
+    const result = FinanceDomain.deleteStash(appState.stashes, appState.syncQueue, stashId);
+    if (!result.item) return;
+    appState.stashes = result.stashes;
+    appState.syncQueue = result.syncQueue;
     logAudit({
       action: "DELETE_STASH",
       targetId: item.id,
