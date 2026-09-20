@@ -1,0 +1,120 @@
+// Pure finance domain/application services shared by the web app and extension.
+(function (root) {
+  "use strict";
+
+  function parseAmount(value) {
+    if (value === null || value === undefined) return 0;
+    if (typeof value === "number") {
+      return isFinite(value) && !isNaN(value) ? Math.round(value * 100) / 100 : 0;
+    }
+    var text = String(value).trim().replace(/[^0-9.-]/g, "");
+    if (!text || text === "-" || text === ".") return 0;
+    var amount = parseFloat(text);
+    return isFinite(amount) && !isNaN(amount) ? Math.round(amount * 100) / 100 : 0;
+  }
+
+  function getLocalDateStr(date) {
+    var value = date || new Date();
+    return value.getFullYear() + "-" +
+      String(value.getMonth() + 1).padStart(2, "0") + "-" +
+      String(value.getDate()).padStart(2, "0");
+  }
+
+  function calculateLedger(transactions, debts, dailyRollover, now) {
+    var current = now || new Date();
+    var today = getLocalDateStr(current);
+    var monday = new Date(current);
+    var day = monday.getDay();
+    monday.setDate(monday.getDate() + ((day === 0 ? -6 : 1) - day));
+    monday.setHours(0, 0, 0, 0);
+    var todayAllowance = 0, todaySpent = 0, weekAllowance = 0, weekSpent = 0;
+    var hasAllowanceToday = false;
+    (transactions || []).forEach(function (tx) {
+      var amount = parseAmount(tx.amount);
+      var isAllowance = String(tx.type || "").toLowerCase() === "allowance";
+      var txTime = new Date((tx.date || "").indexOf("T") !== -1 ?
+        tx.date : (tx.timestamp || (tx.date + "T00:00:00")));
+      if (tx.date === today) {
+        if (isAllowance) { todayAllowance += amount; hasAllowanceToday = true; }
+        else todaySpent += amount;
+      }
+      if (txTime >= monday) {
+        if (isAllowance) weekAllowance += amount;
+        else weekSpent += amount;
+      }
+    });
+    var totalIOwe = 0, totalOwedToMe = 0;
+    (debts || []).forEach(function (debt) {
+      if (String(debt.status || "").toLowerCase() !== "active") return;
+      var remaining = Math.max(0, parseAmount(debt.amount) - parseAmount(debt.paid));
+      if (String(debt.direction || "").toLowerCase().indexOf("i owe") !== -1) totalIOwe += remaining;
+      else totalOwedToMe += remaining;
+    });
+    var rollover = 0;
+    if (dailyRollover) {
+      var pastAllowance = 0, pastSpent = 0;
+      (transactions || []).forEach(function (tx) {
+        if (tx.date < today) {
+          if (String(tx.type || "").toLowerCase() === "allowance") pastAllowance += parseAmount(tx.amount);
+          else pastSpent += parseAmount(tx.amount);
+        }
+      });
+      rollover = Math.max(0, Math.round((pastAllowance - pastSpent) * 100) / 100);
+    }
+    var todayRemaining = Math.round((todayAllowance + rollover - todaySpent) * 100) / 100;
+    var weekSavings = Math.round((weekAllowance - weekSpent) * 100) / 100;
+    return {
+      todayRemaining: todayRemaining, todayAllowance: todayAllowance, todaySpent: todaySpent,
+      rolloverAmt: rollover, weekSavings: weekSavings, hasAllowanceToday: hasAllowanceToday,
+      totalIOwe: totalIOwe, totalOwedToMe: totalOwedToMe,
+      projectedTodayIfPayDebts: todayRemaining - totalIOwe,
+      projectedWeekIfPayDebts: weekSavings - totalIOwe
+    };
+  }
+
+  function settleDebt(debt, payment) {
+    var amount = parseAmount(debt && debt.amount);
+    var paid = parseAmount(debt && debt.paid);
+    var remaining = Math.max(0, amount - paid);
+    var actual = Math.min(Math.max(0, parseAmount(payment)), remaining);
+    return {
+      actualPayment: actual,
+      paid: paid + actual,
+      status: paid + actual >= amount ? "Settled" : (debt.status || "Active")
+    };
+  }
+
+  function stashDeposit(stashes, entry) {
+    var stash = Object.assign({}, entry || {});
+    stash.amount = parseAmount(stash.amount);
+    stash.note = stash.note || "Reserve";
+    stash.date = stash.date || getLocalDateStr();
+    stash.timestamp = stash.timestamp || new Date().toISOString();
+    stash.status = stash.status || "Active";
+    return [stash].concat(stashes || []);
+  }
+
+  function unstash(stashes, id) {
+    var list = stashes || [], index = list.findIndex(function (item) { return item.id === id; });
+    if (index < 0) return { stashes: list, item: null };
+    return { stashes: list.slice(0, index).concat(list.slice(index + 1)), item: list[index] };
+  }
+
+  function enqueue(queue, item, timestamp) {
+    var next = (queue || []).slice();
+    var mutation = Object.assign({}, item);
+    if (!mutation.timestamp) mutation.timestamp = timestamp || new Date().toISOString();
+    next.push(mutation);
+    return next;
+  }
+
+  root.FinanceDomain = {
+    parseAmount: parseAmount,
+    getLocalDateStr: getLocalDateStr,
+    calculateLedger: calculateLedger,
+    settleDebt: settleDebt,
+    stashDeposit: stashDeposit,
+    unstash: unstash,
+    enqueue: enqueue
+  };
+}(typeof window !== "undefined" ? window : this));

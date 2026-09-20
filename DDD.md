@@ -234,7 +234,25 @@ When an operation involves business rules across multiple aggregates, it is enca
 
 ## 4. Hexagonal Architecture (Ports & Adapters)
 
-To ensure longevity and maintainability, the application follows strict hexagonal separation:
+The static web client and WebExtension share the browser-compatible pure domain/application
+service in `shared/domain.js` (packaged as `docs/shared/domain.js` and
+`extension/shared/domain.js`). The popup adapters delegate to it for:
+
+* transaction/ledger parsing and balance calculations;
+* debt settlement arithmetic and pay-now projections;
+* stash deposit/unstash mutations; and
+* immutable sync-queue mutation.
+
+The service deliberately uses a global namespace rather than ES module syntax so it works
+when loaded by static HTML and WebExtension manifests without a build step. UI rendering,
+storage, OAuth, and Sheets transport remain adapters in the client scripts.
+
+The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
+Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
+work until the setting is resumed.
+
+This establishes the current hexagonal boundary; further UI extraction can extend it as the
+application grows:
 
 ```
 +-------------------------------------------------------------------------------+

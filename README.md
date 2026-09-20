@@ -145,6 +145,9 @@ After forking the repository, use your own GitHub Pages URL:
 ```text
 Web app / PWA / Browser extension
                     |
+       Shared browser-compatible domain services
+ (ledger, debt, stash, and sync-queue mutations)
+                    |
              Local application state
                     |
         Optional Google Sheets synchronization
@@ -152,12 +155,16 @@ Web app / PWA / Browser extension
 
 See [DDD.md](DDD.md) for domain and architecture notes, and [FEATURE_GUIDE.md](FEATURE_GUIDE.md) for detailed behavior.
 
+Both clients load the same pure, non-module domain service (`shared/domain.js`, copied into
+each static client package) before their UI scripts. Settings also includes a persisted
+**Pause Live Conway Animation** toggle for stopping and resuming background animation work.
+
 ## Requirements
 
-The web app and browser extension do not require a package manager or build step.
+The web app and browser extension do not require a build step.
 
 - A modern browser with JavaScript enabled
-- Node.js for the JavaScript syntax checks in the test suite
+- Node.js for JavaScript checks and the optional local server
 - A Google account and Google Cloud project only if Google Sheets synchronization is required
 
 ## Fork and Deploy Your Own Copy
@@ -257,12 +264,16 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 ```text
 .
 ├── docs/                       # GitHub Pages web app and PWA assets
+│   └── shared/domain.js        # Browser-compatible domain service copy
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
 │   ├── popup.html
 │   ├── popup.js
 │   ├── background.js
-│   └── google_sync.js
+│   ├── google_sync.js
+│   └── shared/domain.js
+├── shared/domain.js             # Canonical domain/application service
+├── tests/domain.test.js         # Domain behavior checks
 ├── package_extension.sh        # Creates Firefox XPI and ZIP packages
 ├── FEATURE_GUIDE.md            # Detailed feature documentation
 ├── DDD.md                     # Domain and architecture notes

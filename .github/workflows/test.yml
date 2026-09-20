@@ -29,6 +29,10 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
+          node --check shared/domain.js
+          node --check tests/domain.test.js
+          node --check docs/shared/domain.js
+          node --check extension/shared/domain.js
           node --check docs/popup.js
           node --check docs/google_sync.js
           node --check docs/sw.js
@@ -40,5 +44,10 @@ jobs:
         run: |
           test -f docs/index.html
           test -f docs/manifest.webmanifest
+          test -f docs/shared/domain.js
           test -f extension/popup.html
           test -f extension/manifest.json
+          test -f extension/shared/domain.js
+
+      - name: Run domain tests
+        run: node tests/domain.test.js

@@ -129,111 +129,16 @@ function persistState() {
 
 // --- Metrics Calculation (Instant 0 ms) ---
 function computeMetrics() {
-  const now = new Date();
-  const todayStr = getLocalDateStr(now);
-
-  const dayOfWeek = now.getDay();
-  const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  monday.setHours(0, 0, 0, 0);
-
-  let todayAllowance = 0;
-  let todaySpent = 0;
-  let hasAllowanceToday = false;
-
-  let weekAllowance = 0;
-  let weekSpent = 0;
-
-  appState.transactions.forEach(tx => {
-    const txDate = tx.date;
-    const txTime = new Date((tx.date || "").includes("T") ? tx.date : (tx.timestamp || (tx.date + "T00:00:00")));
-    const amt = parseAmount(tx.amount);
-    const isAllow = (tx.type || "").toLowerCase() === "allowance";
-
-    if (txDate === todayStr) {
-      if (isAllow) {
-        todayAllowance += amt;
-        hasAllowanceToday = true;
-      } else {
-        todaySpent += amt;
-      }
-    }
-
-    if (txTime >= monday) {
-      if (isAllow) {
-        weekAllowance += amt;
-      } else {
-        weekSpent += amt;
-      }
-    }
-  });
-
-  let totalIOwe = 0;
-  let totalOwedToMe = 0;
-
-  appState.debts.forEach(d => {
-    if ((d.status || "").toLowerCase() === "active") {
-      const remaining = Math.max(0, parseAmount(d.amount) - parseAmount(d.paid));
-      if ((d.direction || "").toLowerCase().indexOf("i owe") !== -1) {
-        totalIOwe += remaining;
-      } else {
-        totalOwedToMe += remaining;
-      }
-    }
-  });
-
-  let rolloverAmt = 0;
-  if (appState.dailyRollover) {
-    let pastAllow = 0;
-    let pastSpent = 0;
-    appState.transactions.forEach(tx => {
-      if (tx.date < todayStr) {
-        const amt = parseAmount(tx.amount);
-        if ((tx.type || "").toLowerCase() === "allowance") pastAllow += amt;
-        else pastSpent += amt;
-      }
-    });
-    rolloverAmt = Math.max(0, Math.round((pastAllow - pastSpent) * 100) / 100);
-  }
-
-  const todayRemaining = Math.round(((todayAllowance + rolloverAmt) - todaySpent) * 100) / 100;
-  const weekSavings = Math.round((weekAllowance - weekSpent) * 100) / 100;
-
-  return {
-    todayRemaining,
-    todayAllowance,
-    todaySpent,
-    rolloverAmt,
-    weekSavings,
-    hasAllowanceToday,
-    totalIOwe,
-    totalOwedToMe,
-    projectedTodayIfPayDebts: todayRemaining - totalIOwe,
-    projectedWeekIfPayDebts: weekSavings - totalIOwe
-  };
+  return FinanceDomain.calculateLedger(appState.transactions, appState.debts, appState.dailyRollover, new Date());
 }
 
 // Strict Amount Parser: handles integers, decimals, commas, currency prefixes, and avoids float glitches
 function parseAmount(val) {
-  if (val === null || val === undefined) return 0;
-  if (typeof val === "number") {
-    if (isNaN(val) || !isFinite(val)) return 0;
-    return Math.round(val * 100) / 100;
-  }
-  let str = String(val).trim().replace(/[^0-9.-]/g, "");
-  if (!str || str === "-" || str === ".") return 0;
-  const num = parseFloat(str);
-  if (isNaN(num) || !isFinite(num)) return 0;
-  return Math.round(num * 100) / 100;
+  return FinanceDomain.parseAmount(val);
 }
 
 function getLocalDateStr(d) {
-  const date = d || new Date();
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
+  return FinanceDomain.getLocalDateStr(d);
 }
 
 // --- Status & Sync Badges ---
@@ -526,9 +431,7 @@ function updateUtangAffectCashLabel() {
 
 // --- Mutation Handlers (Local-First Instant Execution) ---
 function queueSyncItem(item) {
-  if (!appState.syncQueue) appState.syncQueue = [];
-  if (!item.timestamp) item.timestamp = new Date().toISOString();
-  appState.syncQueue.push(item);
+  appState.syncQueue = FinanceDomain.enqueue(appState.syncQueue, item);
 }
 
 function addTransaction(tx) {
@@ -604,12 +507,11 @@ function settleDebt(id, payAmt, affectCash = true) {
     return;
   }
 
-  const actualPay = Math.min(payAmt, remaining);
-  const newPaid = currentPaid + actualPay;
+  const settlement = FinanceDomain.settleDebt(d, payAmt);
+  const actualPay = settlement.actualPayment;
+  const newPaid = settlement.paid;
   d.paid = newPaid;
-  if (newPaid >= totalAmt) {
-    d.status = "Settled";
-  }
+  d.status = settlement.status;
 
   const isIOwe = (d.direction || "").toLowerCase().indexOf("i owe") !== -1;
   if (affectCash) {
@@ -1011,7 +913,7 @@ function addStash(amount, note, date) {
   };
 
   appState.transactions.unshift(tx);
-  appState.stashes.unshift(stash);
+  appState.stashes = FinanceDomain.stashDeposit(appState.stashes, stash);
 
   queueSyncItem({ op: "ADD_TX", data: tx });
   queueSyncItem({ op: "SYNC_STASHES", data: stash });
@@ -1025,11 +927,13 @@ function unstash(stashId) {
   const idx = appState.stashes.findIndex(s => s.id === stashId);
   if (idx === -1) return;
 
-  const item = appState.stashes[idx];
+  const result = FinanceDomain.unstash(appState.stashes, stashId);
+  const item = result.item;
+  if (!item) return;
   const amt = Number(item.amount) || 0;
   const cleanNote = item.note || "Reserve";
 
-  appState.stashes.splice(idx, 1);
+  appState.stashes = result.stashes;
 
   const txId = "tx_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
   const tx = {
@@ -3170,6 +3074,14 @@ function setupEventListeners() {
   });
 
   document.getElementById("entryForm").addEventListener("submit", submitEntry);
+  const clearFNote = document.getElementById("clearFNote");
+  if (clearFNote) clearFNote.addEventListener("click", () => {
+    const note = document.getElementById("fNote");
+    if (note) {
+      note.value = "";
+      note.focus();
+    }
+  });
   document.getElementById("utangForm").addEventListener("submit", submitUtang);
 
   const uDirEl = document.getElementById("uDirection");
@@ -3487,6 +3399,7 @@ function setupEventListeners() {
       if (appState.disableBgAnimation) {
         const bgCanvas = document.getElementById("bgCanvas");
         if (bgCanvas) drawStaticBackground(bgCanvas);
+        if (bgAnimationId) cancelAnimationFrame(bgAnimationId);
         bgAnimationId = null;
       } else {
         wakeBackgroundLoop();
@@ -3514,6 +3427,7 @@ function setupEventListeners() {
       if (appState.disableBgAnimation) {
         const bgCanvas = document.getElementById("bgCanvas");
         if (bgCanvas) drawStaticBackground(bgCanvas);
+        if (bgAnimationId) cancelAnimationFrame(bgAnimationId);
         bgAnimationId = null;
       } else {
         wakeBackgroundLoop();
