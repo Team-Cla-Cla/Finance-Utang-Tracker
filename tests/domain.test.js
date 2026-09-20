@@ -117,6 +117,31 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(discarded.item.id, "stash-2");
   assert.equal(discarded.stashes.length, 0);
   assert.equal(discarded.syncQueue.at(-1).data.status, "Discarded");
+  const settings = domain.updateSettings(
+    { dailyRollover: false, googleAuth: { clientId: "old", spreadsheetId: "" } },
+    { dailyRollover: true, googleAuth: { clientId: "new" } }
+  );
+  assert.equal(settings.dailyRollover, true);
+  assert.equal(settings.googleAuth.clientId, "new");
+  assert.equal(settings.googleAuth.spreadsheetId, "");
+  const merged = domain.mergeCloudData(
+    {
+      transactions: [{ id: "local", date: "2026-09-24" }],
+      debts: [],
+      stashes: [],
+      presets: [{ id: "preset-1" }],
+      auditLog: [{ timestamp: "2026-09-24T10:00:00Z", action: "LOCAL", targetId: "1" }]
+    },
+    {
+      transactions: [{ id: "cloud", date: "2026-09-23" }],
+      presets: [{ id: "preset-1" }, { id: "preset-2" }],
+      auditLog: [{ timestamp: "2026-09-24T11:00:00Z", action: "CLOUD", targetId: "2" }]
+    }
+  );
+  assert.equal(merged.updated, true);
+  assert.equal(merged.state.transactions.length, 2);
+  assert.equal(merged.state.presets.length, 2);
+  assert.equal(merged.state.auditLog.length, 2);
 }
 
 console.log("Domain tests passed.");

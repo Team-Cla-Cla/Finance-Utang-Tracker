@@ -2506,71 +2506,13 @@ function renderAnalyticsUI() {
 async function hydrateFromCloud(token, sheetId) {
   try {
     const cloudData = await GoogleSync.pullAllData(token, sheetId);
-    let updated = false;
-
-    // Merge transactions (keep local edits, add missing transactions)
-    const localTxIds = new Set(appState.transactions.map(t => t.id));
-    if (cloudData.transactions && cloudData.transactions.length > 0) {
-      cloudData.transactions.forEach(ctx => {
-        if (!localTxIds.has(ctx.id)) {
-          appState.transactions.push(ctx);
-          localTxIds.add(ctx.id);
-          updated = true;
-        }
-      });
-      appState.transactions.sort((a, b) => (b.timestamp || b.date).localeCompare(a.timestamp || a.date));
-    }
-
-    // Merge debts
-    const localDebtIds = new Set(appState.debts.map(d => d.id));
-    if (cloudData.debts && cloudData.debts.length > 0) {
-      cloudData.debts.forEach(cd => {
-        if (!localDebtIds.has(cd.id)) {
-          appState.debts.push(cd);
-          localDebtIds.add(cd.id);
-          updated = true;
-        }
-      });
-    }
-
-    // Merge stashes
-    const localStashIds = new Set(appState.stashes.map(s => s.id));
-    if (cloudData.stashes && cloudData.stashes.length > 0) {
-      cloudData.stashes.forEach(cs => {
-        if (!localStashIds.has(cs.id)) {
-          appState.stashes.push(cs);
-          localStashIds.add(cs.id);
-          updated = true;
-        }
-      });
-    }
-
-    // Merge presets
-    if (cloudData.presets && cloudData.presets.length > 0) {
-      const localPIds = new Set(appState.presets.map(p => p.id));
-      cloudData.presets.forEach(cp => {
-        if (!localPIds.has(cp.id)) {
-          appState.presets.push(cp);
-          localPIds.add(cp.id);
-          updated = true;
-        }
-      });
-    }
-
-    // Merge auditLog
-    if (cloudData.auditLog && cloudData.auditLog.length > 0) {
-      const localAuditKeys = new Set(appState.auditLog.map(a => `${a.timestamp}_${a.action}_${a.targetId}`));
-      cloudData.auditLog.forEach(ca => {
-        const k = `${ca.timestamp}_${ca.action}_${ca.targetId}`;
-        if (!localAuditKeys.has(k)) {
-          appState.auditLog.push(ca);
-          localAuditKeys.add(k);
-          updated = true;
-        }
-      });
-      appState.auditLog.sort((a, b) => (b.timestamp || "").localeCompare(a.timestamp || ""));
-      if (appState.auditLog.length > 100) appState.auditLog = appState.auditLog.slice(0, 100);
-    }
+    const merged = FinanceDomain.mergeCloudData(appState, cloudData);
+    const updated = merged.updated;
+    appState.transactions = merged.state.transactions;
+    appState.debts = merged.state.debts;
+    appState.stashes = merged.state.stashes;
+    appState.presets = merged.state.presets;
+    appState.auditLog = merged.state.auditLog;
 
     if (updated) {
       persistState();
@@ -3409,13 +3351,21 @@ function setupEventListeners() {
 
   document.getElementById("settingsForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    appState.googleAuth.clientId = document.getElementById("cfgClientId").value.trim();
-    appState.googleAuth.spreadsheetId = GoogleSync.extractSpreadsheetId(document.getElementById("cfgSheet").value.trim());
+    const googleAuth = {
+      clientId: document.getElementById("cfgClientId").value.trim(),
+      spreadsheetId: GoogleSync.extractSpreadsheetId(document.getElementById("cfgSheet").value.trim())
+    };
     const roCheck = document.getElementById("cfgRollover");
-    if (roCheck) appState.dailyRollover = roCheck.checked;
     const animCheck = document.getElementById("cfgDisableAnimation");
+    const settings = FinanceDomain.updateSettings(appState, {
+      dailyRollover: roCheck ? roCheck.checked : appState.dailyRollover,
+      disableBgAnimation: animCheck ? animCheck.checked : appState.disableBgAnimation,
+      googleAuth: googleAuth
+    });
+    appState.dailyRollover = settings.dailyRollover;
+    appState.disableBgAnimation = settings.disableBgAnimation;
+    appState.googleAuth = settings.googleAuth;
     if (animCheck) {
-      appState.disableBgAnimation = animCheck.checked;
       if (appState.disableBgAnimation) {
         const bgCanvas = document.getElementById("bgCanvas");
         if (bgCanvas) drawStaticBackground(bgCanvas);

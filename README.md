@@ -146,7 +146,7 @@ After forking the repository, use your own GitHub Pages URL:
 Web app / PWA / Browser extension
                     |
        Shared browser-compatible domain services
- (ledger, debt, stash, and sync-queue mutations)
+ (ledger, debt, stash, settings, cloud merge, and sync-queue mutations)
                     |
              Local application state
                     |

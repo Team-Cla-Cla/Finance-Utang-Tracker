@@ -241,11 +241,13 @@ service in `shared/domain.js` (packaged as `docs/shared/domain.js` and
 * transaction/ledger parsing and balance calculations;
 * debt settlement arithmetic and pay-now projections;
 * stash deposit/unstash mutations; and
-* immutable sync-queue mutation.
+* immutable sync-queue mutation;
+* settings updates and deterministic cloud-state merging.
 
 The service deliberately uses a global namespace rather than ES module syntax so it works
-when loaded by static HTML and WebExtension manifests without a build step. UI rendering,
-storage, OAuth, and Sheets transport remain adapters in the client scripts.
+when loaded by static HTML and WebExtension manifests without a build step. UI rendering, browser storage, OAuth, and Sheets transport remain adapters in the client
+scripts. The synchronization adapter owns network orchestration while the shared service
+owns the state merge and settings invariants.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation

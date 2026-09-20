@@ -229,6 +229,65 @@
     };
   }
 
+  function updateSettings(settings, changes) {
+    var current = settings || {};
+    var next = Object.assign({}, current);
+    var fields = ["stashMasked", "dailyRollover", "largeFont", "disableBgAnimation", "installDate"];
+    fields.forEach(function (field) {
+      if (Object.prototype.hasOwnProperty.call(changes || {}, field)) next[field] = changes[field];
+    });
+    if (changes && changes.googleAuth) {
+      next.googleAuth = Object.assign({}, current.googleAuth || {}, changes.googleAuth);
+    }
+    return next;
+  }
+
+  function mergeCloudData(state, cloudData) {
+    var current = state || {};
+    var cloud = cloudData || {};
+    var next = {
+      transactions: (current.transactions || []).slice(),
+      debts: (current.debts || []).slice(),
+      stashes: (current.stashes || []).slice(),
+      presets: (current.presets || []).slice(),
+      auditLog: (current.auditLog || []).slice()
+    };
+    var updated = false;
+    function mergeUnique(target, incoming, key) {
+      var ids = new Set(target.map(function (item) { return item[key]; }));
+      (incoming || []).forEach(function (item) {
+        if (!ids.has(item[key])) {
+          target.push(item);
+          ids.add(item[key]);
+          updated = true;
+        }
+      });
+    }
+    mergeUnique(next.transactions, cloud.transactions, "id");
+    mergeUnique(next.debts, cloud.debts, "id");
+    mergeUnique(next.stashes, cloud.stashes, "id");
+    mergeUnique(next.presets, cloud.presets, "id");
+    var auditKeys = new Set(next.auditLog.map(function (item) {
+      return (item.timestamp || "") + "_" + (item.action || "") + "_" + (item.targetId || "");
+    }));
+    (cloud.auditLog || []).forEach(function (item) {
+      var key = (item.timestamp || "") + "_" + (item.action || "") + "_" + (item.targetId || "");
+      if (!auditKeys.has(key)) {
+        next.auditLog.push(item);
+        auditKeys.add(key);
+        updated = true;
+      }
+    });
+    next.transactions.sort(function (a, b) {
+      return (b.timestamp || b.date || "").localeCompare(a.timestamp || a.date || "");
+    });
+    next.auditLog.sort(function (a, b) {
+      return (b.timestamp || "").localeCompare(a.timestamp || "");
+    });
+    if (next.auditLog.length > 100) next.auditLog = next.auditLog.slice(0, 100);
+    return { state: next, updated: updated };
+  }
+
   root.FinanceDomain = {
     parseAmount: parseAmount,
     getLocalDateStr: getLocalDateStr,
@@ -244,6 +303,8 @@
     settleDebtState: settleDebtState,
     deleteDebt: deleteDebt,
     unstashState: unstashState,
-    deleteStash: deleteStash
+    deleteStash: deleteStash,
+    updateSettings: updateSettings,
+    mergeCloudData: mergeCloudData
   };
 }(typeof window !== "undefined" ? window : this));
