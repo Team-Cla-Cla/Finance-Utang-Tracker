@@ -435,8 +435,9 @@ function queueSyncItem(item) {
 }
 
 function addTransaction(tx) {
-  appState.transactions.unshift(tx);
-  queueSyncItem({ op: "ADD_TX", data: tx });
+  const result = FinanceDomain.recordTransaction(appState.transactions, appState.syncQueue, tx);
+  appState.transactions = result.transactions;
+  appState.syncQueue = result.syncQueue;
   persistState();
   renderUI();
   triggerAutoSync();

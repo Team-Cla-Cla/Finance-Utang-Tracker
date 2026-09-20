@@ -108,6 +108,13 @@
     return next;
   }
 
+  function recordTransaction(transactions, queue, transaction, timestamp) {
+    return {
+      transactions: [transaction].concat(transactions || []),
+      syncQueue: enqueue(queue, { op: "ADD_TX", data: transaction }, timestamp)
+    };
+  }
+
   root.FinanceDomain = {
     parseAmount: parseAmount,
     getLocalDateStr: getLocalDateStr,
@@ -115,6 +122,7 @@
     settleDebt: settleDebt,
     stashDeposit: stashDeposit,
     unstash: unstash,
-    enqueue: enqueue
+    enqueue: enqueue,
+    recordTransaction: recordTransaction
   };
 }(typeof window !== "undefined" ? window : this));

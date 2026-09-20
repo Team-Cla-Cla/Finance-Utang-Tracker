@@ -43,6 +43,17 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.notEqual(stashes, []);
   assert.equal(domain.unstash(stashes, "stash-1").item.id, "stash-1");
   assert.equal(domain.enqueue([], { op: "ADD_TX" }, "fixed")[0].timestamp, "fixed");
+  const recorded = domain.recordTransaction(
+    [{ id: "older" }],
+    [],
+    { id: "newer", type: "Expense", amount: 25 },
+    "fixed"
+  );
+  assert.equal(recorded.transactions[0].id, "newer");
+  assert.equal(recorded.transactions[1].id, "older");
+  assert.equal(recorded.syncQueue[0].op, "ADD_TX");
+  assert.equal(recorded.syncQueue[0].data.id, "newer");
+  assert.equal(recorded.syncQueue[0].timestamp, "fixed");
 }
 
 console.log("Domain tests passed.");
