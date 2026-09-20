@@ -1,10 +1,11 @@
 // Service Worker for Finance & Utang Tracker (Offline-First PWA)
-const CACHE_NAME = "finance-tracker-v2.3.4";
+const CACHE_NAME = "finance-tracker-v0.9.1";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
-  "./popup.js?v=2.3.4",
-  "./google_sync.js?v=2.3.4",
+  "./shared/domain.js?v=0.9.1",
+  "./popup.js?v=0.9.1",
+  "./google_sync.js?v=0.9.1",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon16.png",
