@@ -115,6 +115,35 @@
     };
   }
 
+  function editTransaction(transactions, queue, id, updatedFields, timestamp) {
+    var list = transactions || [];
+    var index = list.findIndex(function (transaction) { return transaction.id === id; });
+    if (index < 0) return { transactions: list, syncQueue: queue || [], old: null, updated: null };
+    var old = Object.assign({}, list[index]);
+    var updated = Object.assign({}, list[index], updatedFields || {}, {
+      edited: true,
+      edited_at: timestamp || new Date().toISOString()
+    });
+    var next = list.slice();
+    next[index] = updated;
+    return {
+      transactions: next,
+      syncQueue: enqueue(queue, { op: "EDIT_TX", data: updated }, timestamp),
+      old: old,
+      updated: updated
+    };
+  }
+
+  function deleteTransaction(transactions, queue, id, timestamp) {
+    var list = transactions || [];
+    var found = list.find(function (transaction) { return transaction.id === id; }) || null;
+    return {
+      transactions: list.filter(function (transaction) { return transaction.id !== id; }),
+      syncQueue: enqueue(queue, { op: "DEL_TX", data: { id: id } }, timestamp),
+      found: found
+    };
+  }
+
   root.FinanceDomain = {
     parseAmount: parseAmount,
     getLocalDateStr: getLocalDateStr,
@@ -123,6 +152,8 @@
     stashDeposit: stashDeposit,
     unstash: unstash,
     enqueue: enqueue,
-    recordTransaction: recordTransaction
+    recordTransaction: recordTransaction,
+    editTransaction: editTransaction,
+    deleteTransaction: deleteTransaction
   };
 }(typeof window !== "undefined" ? window : this));

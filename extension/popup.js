@@ -444,16 +444,15 @@ function addTransaction(tx) {
 }
 
 function editTransaction(id, updatedFields) {
-  const idx = appState.transactions.findIndex(t => t.id === id);
-  if (idx !== -1) {
-    const old = { ...appState.transactions[idx] };
-    appState.transactions[idx] = { ...appState.transactions[idx], ...updatedFields, edited: true, edited_at: new Date().toISOString() };
+  const result = FinanceDomain.editTransaction(appState.transactions, appState.syncQueue, id, updatedFields);
+  if (result.updated) {
+    appState.transactions = result.transactions;
+    appState.syncQueue = result.syncQueue;
     logAudit({
       action: "EDIT_TX",
       targetId: id,
-      summary: `Edited entry #${id.slice(-6)}: ${old.amount} -> ${updatedFields.amount !== undefined ? updatedFields.amount : old.amount} (${updatedFields.category || old.category})`
+      summary: `Edited entry #${id.slice(-6)}: ${result.old.amount} -> ${updatedFields.amount !== undefined ? updatedFields.amount : result.old.amount} (${updatedFields.category || result.old.category})`
     });
-    queueSyncItem({ op: "EDIT_TX", data: appState.transactions[idx] });
     persistState();
     renderUI();
     triggerAutoSync();
@@ -462,16 +461,16 @@ function editTransaction(id, updatedFields) {
 
 function delTx(id) {
   if (!confirm("Delete entry?")) return;
-  const found = appState.transactions.find(t => t.id === id);
-  appState.transactions = appState.transactions.filter(t => t.id !== id);
-  if (found) {
+  const result = FinanceDomain.deleteTransaction(appState.transactions, appState.syncQueue, id);
+  appState.transactions = result.transactions;
+  appState.syncQueue = result.syncQueue;
+  if (result.found) {
     logAudit({
       action: "DELETE_TX",
       targetId: id,
-      summary: `Deleted ${found.type} #${id.slice(-6)} (${found.amount} ${found.category})`
+      summary: `Deleted ${result.found.type} #${id.slice(-6)} (${result.found.amount} ${result.found.category})`
     });
   }
-  queueSyncItem({ op: "DEL_TX", data: { id } });
   persistState();
   renderUI();
   showStatus("Deleted", false);

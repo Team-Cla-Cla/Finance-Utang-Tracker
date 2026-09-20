@@ -54,6 +54,16 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(recorded.syncQueue[0].op, "ADD_TX");
   assert.equal(recorded.syncQueue[0].data.id, "newer");
   assert.equal(recorded.syncQueue[0].timestamp, "fixed");
+  const edited = domain.editTransaction(recorded.transactions, recorded.syncQueue, "newer", { amount: 30 }, "edited-time");
+  assert.equal(edited.old.amount, 25);
+  assert.equal(edited.updated.amount, 30);
+  assert.equal(edited.updated.edited, true);
+  assert.equal(edited.updated.edited_at, "edited-time");
+  assert.equal(edited.syncQueue.at(-1).op, "EDIT_TX");
+  const deleted = domain.deleteTransaction(edited.transactions, edited.syncQueue, "newer", "deleted-time");
+  assert.equal(deleted.found.id, "newer");
+  assert.equal(deleted.transactions.some(transaction => transaction.id === "newer"), false);
+  assert.equal(deleted.syncQueue.at(-1).op, "DEL_TX");
 }
 
 console.log("Domain tests passed.");
