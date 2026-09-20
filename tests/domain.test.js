@@ -64,6 +64,36 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(deleted.found.id, "newer");
   assert.equal(deleted.transactions.some(transaction => transaction.id === "newer"), false);
   assert.equal(deleted.syncQueue.at(-1).op, "DEL_TX");
+  const debt = { id: "debt-1", person: "Alex", direction: "I Owe", amount: 100, paid: 0, status: "Active" };
+  const addedDebt = domain.addDebt([], [], debt, "debt-time");
+  assert.equal(addedDebt.debts[0].id, "debt-1");
+  assert.equal(addedDebt.syncQueue[0].op, "ADD_DEBT");
+  const settledDebt = domain.settleDebtState(
+    addedDebt.debts,
+    [],
+    addedDebt.syncQueue,
+    "debt-1",
+    40,
+    true,
+    { id: "tx-debt", relatedDebtId: "debt-1", amount: 40 },
+    "settle-time"
+  );
+  assert.equal(settledDebt.debt.paid, 40);
+  assert.equal(settledDebt.transactions[0].id, "tx-debt");
+  assert.equal(settledDebt.syncQueue.at(-2).op, "ADD_TX");
+  assert.equal(settledDebt.syncQueue.at(-1).op, "SETTLE_DEBT");
+  const removedDebt = domain.deleteDebt(
+    settledDebt.debts,
+    settledDebt.transactions,
+    settledDebt.syncQueue,
+    "debt-1",
+    true,
+    "delete-time"
+  );
+  assert.equal(removedDebt.found.id, "debt-1");
+  assert.equal(removedDebt.transactions.length, 0);
+  assert.equal(removedDebt.syncQueue.at(-2).op, "DEL_DEBT");
+  assert.equal(removedDebt.syncQueue.at(-1).op, "DEL_TX");
 }
 
 console.log("Domain tests passed.");

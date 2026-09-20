@@ -478,8 +478,9 @@ function delTx(id) {
 }
 
 function addDebt(debt) {
-  appState.debts.unshift(debt);
-  queueSyncItem({ op: "ADD_DEBT", data: debt });
+  const result = FinanceDomain.addDebt(appState.debts, appState.syncQueue, debt);
+  appState.debts = result.debts;
+  appState.syncQueue = result.syncQueue;
   persistState();
   renderUI();
   triggerAutoSync();
@@ -507,35 +508,28 @@ function settleDebt(id, payAmt, affectCash = true) {
     return;
   }
 
-  const settlement = FinanceDomain.settleDebt(d, payAmt);
-  const actualPay = settlement.actualPayment;
-  const newPaid = settlement.paid;
-  d.paid = newPaid;
-  d.status = settlement.status;
-
   const isIOwe = (d.direction || "").toLowerCase().indexOf("i owe") !== -1;
-  if (affectCash) {
-    const tx = {
-      id: "tx_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
-      date: getLocalDateStr(),
-      timestamp: new Date().toISOString(),
-      type: isIOwe ? "Expense" : "Allowance",
-      category: isIOwe ? "Debt Repayment" : "Debt Collection",
-      amount: actualPay,
-      notes: isIOwe ? `Paid debt to ${d.person}` : `Collected debt from ${d.person}`,
-      relatedDebtId: d.id
-    };
-    appState.transactions.unshift(tx);
-    queueSyncItem({ op: "ADD_TX", data: tx });
-  }
-
+  const actualPay = FinanceDomain.settleDebt(d, payAmt).actualPayment;
+  const transaction = affectCash ? {
+    id: "tx_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+    date: getLocalDateStr(),
+    timestamp: new Date().toISOString(),
+    type: isIOwe ? "Expense" : "Allowance",
+    category: isIOwe ? "Debt Repayment" : "Debt Collection",
+    amount: actualPay,
+    notes: isIOwe ? `Paid debt to ${d.person}` : `Collected debt from ${d.person}`,
+    relatedDebtId: d.id
+  } : null;
+  const result = FinanceDomain.settleDebtState(appState.debts, appState.transactions, appState.syncQueue, d.id, payAmt, affectCash, transaction);
+  const newPaid = result.debt.paid;
+  appState.debts = result.debts;
+  appState.transactions = result.transactions;
+  appState.syncQueue = result.syncQueue;
   logAudit({
     action: "SETTLE_DEBT",
     targetId: d.id,
     summary: `Settled ${actualPay.toFixed(2)} for ${d.person} (${d.direction})${affectCash ? ' [cash-linked]' : ''}`
   });
-
-  queueSyncItem({ op: "SETTLE_DEBT", data: { id: d.id, payAmt: actualPay, newPaid, status: d.status } });
 
   persistState();
   renderUI();
@@ -553,14 +547,14 @@ function delUtang(id) {
       summary: `Deleted debt #${id.slice(-6)}: ${foundDebt.amount} (${foundDebt.person})`
     });
   }
-  appState.debts = appState.debts.filter(d => d.id !== id);
-  queueSyncItem({ op: "DEL_DEBT", data: { id } });
-
   // If there was a linked cash transaction created with this debt, prompt to remove it too
   const linkedTx = appState.transactions.find(t => t.relatedDebtId === id);
-  if (linkedTx && confirm(`Also remove the linked wallet transaction (${linkedTx.type} ${linkedTx.amount.toFixed(2)})?`)) {
-    appState.transactions = appState.transactions.filter(t => t.id !== linkedTx.id);
-    queueSyncItem({ op: "DEL_TX", data: { id: linkedTx.id } });
+  const removeLinked = linkedTx && confirm(`Also remove the linked wallet transaction (${linkedTx.type} ${linkedTx.amount.toFixed(2)})?`);
+  const result = FinanceDomain.deleteDebt(appState.debts, appState.transactions, appState.syncQueue, id, !!removeLinked);
+  appState.debts = result.debts;
+  appState.transactions = result.transactions;
+  appState.syncQueue = result.syncQueue;
+  if (removeLinked && linkedTx) {
     logAudit({
       action: "DELETE_TX",
       targetId: linkedTx.id,
