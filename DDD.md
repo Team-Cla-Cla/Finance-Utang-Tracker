@@ -256,6 +256,15 @@ loaded by static HTML and WebExtension manifests without a build step. The synch
 adapter owns network orchestration while the application layer owns the state merge and
 settings invariants.
 
+Static presentation assets are also synchronized: `docs/styles/app.css` and
+`extension/styles/app.css` contain the shared stylesheet, while each HTML entry point keeps
+only its client-specific markup and script loading order.
+
+The client infrastructure is split into small browser adapters as well: `client/state.js`
+owns in-memory state and browser persistence, while `client/status.js` owns status and sync
+badge presentation. Feature controllers remain next candidates for extraction from the
+large popup adapter.
+
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
 work until the setting is resumed.

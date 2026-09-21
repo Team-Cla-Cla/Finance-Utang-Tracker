@@ -266,6 +266,8 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 ```text
 .
 ├── docs/                       # GitHub Pages web app and PWA assets
+│   ├── styles/app.css          # Shared presentation stylesheet copy
+│   ├── client/                 # Shared state and presentation adapters
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
@@ -273,6 +275,8 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   ├── popup.js
 │   ├── background.js
 │   ├── google_sync.js
+│   ├── styles/app.css
+│   ├── client/
 │   └── shared/
 ├── shared/domain.js             # Canonical pure domain model
 ├── shared/application.js        # Canonical application use cases
