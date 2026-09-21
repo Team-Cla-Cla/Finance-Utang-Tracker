@@ -266,6 +266,8 @@ badge presentation. Feature controllers remain next candidates for extraction fr
 large popup adapter. `client/background.js` owns the Conway, ambient-orb, and telemetry
 canvas presentation subsystem. `client/analytics.js` and `client/calendar.js` own the
 analytics and calendar/chronometer presentation subsystems respectively.
+Feature-specific presentation controllers are extracted incrementally; the transaction
+controller now owns entry submission and transaction mutation UI orchestration.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
