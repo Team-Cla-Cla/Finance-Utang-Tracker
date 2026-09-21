@@ -272,6 +272,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   │   ├── analytics.js        # Analytics presentation subsystem
 │   │   └── calendar.js         # Calendar and chronometer subsystem
 │   │   └── transactions.js     # Transaction feature controller
+│   │   └── debts.js             # Debt feature controller
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json

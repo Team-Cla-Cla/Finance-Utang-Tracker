@@ -268,6 +268,8 @@ canvas presentation subsystem. `client/analytics.js` and `client/calendar.js` ow
 analytics and calendar/chronometer presentation subsystems respectively.
 Feature-specific presentation controllers are extracted incrementally; the transaction
 controller now owns entry submission and transaction mutation UI orchestration.
+The debt controller similarly owns debt entry, settlement, deletion, and settlement-modal
+presentation orchestration while delegating state transitions to `FinanceApplication`.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
