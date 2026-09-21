@@ -3,8 +3,11 @@ const CACHE_NAME = "finance-tracker-v0.9.1";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
+  "./styles/app.css?v=0.9.1",
   "./shared/domain.js?v=0.9.1",
   "./shared/application.js?v=0.9.1",
+  "./client/state.js?v=0.9.1",
+  "./client/status.js?v=0.9.1",
   "./popup.js?v=0.9.1",
   "./google_sync.js?v=0.9.1",
   "./manifest.webmanifest",
