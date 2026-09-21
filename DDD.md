@@ -264,7 +264,8 @@ The client infrastructure is split into small browser adapters as well: `client/
 owns in-memory state and browser persistence, while `client/status.js` owns status and sync
 badge presentation. Feature controllers remain next candidates for extraction from the
 large popup adapter. `client/background.js` owns the Conway, ambient-orb, and telemetry
-canvas presentation subsystem.
+canvas presentation subsystem. `client/analytics.js` and `client/calendar.js` own the
+analytics and calendar/chronometer presentation subsystems respectively.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation

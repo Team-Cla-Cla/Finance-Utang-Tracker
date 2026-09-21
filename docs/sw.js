@@ -9,6 +9,8 @@ const ASSETS_TO_CACHE = [
   "./client/state.js?v=0.9.1",
   "./client/status.js?v=0.9.1",
   "./client/background.js?v=0.9.1",
+  "./client/analytics.js?v=0.9.1",
+  "./client/calendar.js?v=0.9.1",
   "./popup.js?v=0.9.1",
   "./google_sync.js?v=0.9.1",
   "./manifest.webmanifest",
