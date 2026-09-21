@@ -268,6 +268,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 ├── docs/                       # GitHub Pages web app and PWA assets
 │   ├── styles/app.css          # Shared presentation stylesheet copy
 │   ├── client/                 # Shared state and presentation adapters
+│   │   └── background.js       # Canvas animation presentation subsystem
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
