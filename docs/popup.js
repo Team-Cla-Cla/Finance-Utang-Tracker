@@ -431,11 +431,11 @@ function updateUtangAffectCashLabel() {
 
 // --- Mutation Handlers (Local-First Instant Execution) ---
 function queueSyncItem(item) {
-  appState.syncQueue = FinanceDomain.enqueue(appState.syncQueue, item);
+  appState.syncQueue = FinanceApplication.enqueue(appState.syncQueue, item);
 }
 
 function addTransaction(tx) {
-  const result = FinanceDomain.recordTransaction(appState.transactions, appState.syncQueue, tx);
+  const result = FinanceApplication.recordTransaction(appState.transactions, appState.syncQueue, tx);
   appState.transactions = result.transactions;
   appState.syncQueue = result.syncQueue;
   persistState();
@@ -444,7 +444,7 @@ function addTransaction(tx) {
 }
 
 function editTransaction(id, updatedFields) {
-  const result = FinanceDomain.editTransaction(appState.transactions, appState.syncQueue, id, updatedFields);
+  const result = FinanceApplication.editTransaction(appState.transactions, appState.syncQueue, id, updatedFields);
   if (result.updated) {
     appState.transactions = result.transactions;
     appState.syncQueue = result.syncQueue;
@@ -461,7 +461,7 @@ function editTransaction(id, updatedFields) {
 
 function delTx(id) {
   if (!confirm("Delete entry?")) return;
-  const result = FinanceDomain.deleteTransaction(appState.transactions, appState.syncQueue, id);
+  const result = FinanceApplication.deleteTransaction(appState.transactions, appState.syncQueue, id);
   appState.transactions = result.transactions;
   appState.syncQueue = result.syncQueue;
   if (result.found) {
@@ -478,7 +478,7 @@ function delTx(id) {
 }
 
 function addDebt(debt) {
-  const result = FinanceDomain.addDebt(appState.debts, appState.syncQueue, debt);
+  const result = FinanceApplication.addDebt(appState.debts, appState.syncQueue, debt);
   appState.debts = result.debts;
   appState.syncQueue = result.syncQueue;
   persistState();
@@ -520,7 +520,7 @@ function settleDebt(id, payAmt, affectCash = true) {
     notes: isIOwe ? `Paid debt to ${d.person}` : `Collected debt from ${d.person}`,
     relatedDebtId: d.id
   } : null;
-  const result = FinanceDomain.settleDebtState(appState.debts, appState.transactions, appState.syncQueue, d.id, payAmt, affectCash, transaction);
+  const result = FinanceApplication.settleDebtState(appState.debts, appState.transactions, appState.syncQueue, d.id, payAmt, affectCash, transaction);
   const newPaid = result.debt.paid;
   appState.debts = result.debts;
   appState.transactions = result.transactions;
@@ -550,7 +550,7 @@ function delUtang(id) {
   // If there was a linked cash transaction created with this debt, prompt to remove it too
   const linkedTx = appState.transactions.find(t => t.relatedDebtId === id);
   const removeLinked = linkedTx && confirm(`Also remove the linked wallet transaction (${linkedTx.type} ${linkedTx.amount.toFixed(2)})?`);
-  const result = FinanceDomain.deleteDebt(appState.debts, appState.transactions, appState.syncQueue, id, !!removeLinked);
+  const result = FinanceApplication.deleteDebt(appState.debts, appState.transactions, appState.syncQueue, id, !!removeLinked);
   appState.debts = result.debts;
   appState.transactions = result.transactions;
   appState.syncQueue = result.syncQueue;
@@ -934,7 +934,7 @@ function unstash(stashId) {
     notes: `Unstashed: ${cleanNote}`
   };
 
-  const result = FinanceDomain.unstashState(appState.stashes, appState.transactions, appState.syncQueue, stashId, tx);
+  const result = FinanceApplication.unstashState(appState.stashes, appState.transactions, appState.syncQueue, stashId, tx);
   if (!result.item) return;
   appState.stashes = result.stashes;
   appState.transactions = result.transactions;
@@ -957,7 +957,7 @@ function deleteStash(stashId) {
   }
 
   if (confirm(`Permanently discard stash record (₱${amt.toFixed(2)}) WITHOUT returning funds to spendable cash?`)) {
-    const result = FinanceDomain.deleteStash(appState.stashes, appState.syncQueue, stashId);
+    const result = FinanceApplication.deleteStash(appState.stashes, appState.syncQueue, stashId);
     if (!result.item) return;
     appState.stashes = result.stashes;
     appState.syncQueue = result.syncQueue;
@@ -2506,7 +2506,7 @@ function renderAnalyticsUI() {
 async function hydrateFromCloud(token, sheetId) {
   try {
     const cloudData = await GoogleSync.pullAllData(token, sheetId);
-    const merged = FinanceDomain.mergeCloudData(appState, cloudData);
+    const merged = FinanceApplication.mergeCloudData(appState, cloudData);
     const updated = merged.updated;
     appState.transactions = merged.state.transactions;
     appState.debts = merged.state.debts;
@@ -3357,7 +3357,7 @@ function setupEventListeners() {
     };
     const roCheck = document.getElementById("cfgRollover");
     const animCheck = document.getElementById("cfgDisableAnimation");
-    const settings = FinanceDomain.updateSettings(appState, {
+    const settings = FinanceApplication.updateSettings(appState, {
       dailyRollover: roCheck ? roCheck.checked : appState.dailyRollover,
       disableBgAnimation: animCheck ? animCheck.checked : appState.disableBgAnimation,
       googleAuth: googleAuth
