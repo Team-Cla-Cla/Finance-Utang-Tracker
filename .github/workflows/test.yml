@@ -39,6 +39,7 @@ jobs:
           node --check docs/client/background.js
           node --check docs/client/analytics.js
           node --check docs/client/calendar.js
+          node --check docs/client/transactions.js
           node --check extension/shared/domain.js
           node --check extension/shared/application.js
           node --check extension/client/state.js
@@ -46,6 +47,7 @@ jobs:
           node --check extension/client/background.js
           node --check extension/client/analytics.js
           node --check extension/client/calendar.js
+          node --check extension/client/transactions.js
           node --check docs/popup.js
           node --check docs/google_sync.js
           node --check docs/sw.js
@@ -65,6 +67,7 @@ jobs:
           test -f docs/client/background.js
           test -f docs/client/analytics.js
           test -f docs/client/calendar.js
+          test -f docs/client/transactions.js
           test -f extension/popup.html
           test -f extension/manifest.json
           test -f extension/shared/domain.js
@@ -75,6 +78,7 @@ jobs:
           test -f extension/client/background.js
           test -f extension/client/analytics.js
           test -f extension/client/calendar.js
+          test -f extension/client/transactions.js
 
       - name: Check synchronized client copies
         run: |
@@ -88,6 +92,7 @@ jobs:
           cmp --silent docs/client/background.js extension/client/background.js
           cmp --silent docs/client/analytics.js extension/client/analytics.js
           cmp --silent docs/client/calendar.js extension/client/calendar.js
+          cmp --silent docs/client/transactions.js extension/client/transactions.js
           cmp --silent docs/index.html extension/popup.html
           cmp --silent docs/popup.js extension/popup.js
 
