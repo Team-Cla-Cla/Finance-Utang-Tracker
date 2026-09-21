@@ -234,20 +234,27 @@ When an operation involves business rules across multiple aggregates, it is enca
 
 ## 4. Hexagonal Architecture (Ports & Adapters)
 
-The static web client and WebExtension share the browser-compatible pure domain/application
-service in `shared/domain.js` (packaged as `docs/shared/domain.js` and
-`extension/shared/domain.js`). The popup adapters delegate to it for:
+The static web client and WebExtension share two browser-compatible layers:
 
-* transaction/ledger parsing and balance calculations;
-* debt settlement arithmetic and pay-now projections;
-* stash deposit/unstash mutations; and
+* `shared/domain.js` is the pure domain model. It owns money parsing, ledger projections,
+  debt arithmetic, and stash invariants without queue, storage, network, or DOM concerns.
+* `shared/application.js` contains use cases. It coordinates domain services with immutable
+  state transitions and sync mutations, but still has no browser, storage, network, or DOM
+  dependencies. It is packaged as `docs/shared/application.js` and
+  `extension/shared/application.js`.
+
+The popup scripts are presentation adapters. They own event handlers, prompts, rendering,
+browser storage, and Google API calls, and delegate business actions to the application layer:
+
+* transaction, debt, and stash use cases;
 * immutable sync-queue mutation;
-* settings updates and deterministic cloud-state merging.
+* settings updates; and
+* deterministic cloud-state merging.
 
-The service deliberately uses a global namespace rather than ES module syntax so it works
-when loaded by static HTML and WebExtension manifests without a build step. UI rendering, browser storage, OAuth, and Sheets transport remain adapters in the client
-scripts. The synchronization adapter owns network orchestration while the shared service
-owns the state merge and settings invariants.
+Both layers deliberately use global namespaces rather than ES module syntax so they work when
+loaded by static HTML and WebExtension manifests without a build step. The synchronization
+adapter owns network orchestration while the application layer owns the state merge and
+settings invariants.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation

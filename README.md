@@ -155,8 +155,9 @@ Web app / PWA / Browser extension
 
 See [DDD.md](DDD.md) for domain and architecture notes, and [FEATURE_GUIDE.md](FEATURE_GUIDE.md) for detailed behavior.
 
-Both clients load the same pure, non-module domain service (`shared/domain.js`, copied into
-each static client package) before their UI scripts. Settings also includes a persisted
+Both clients load the same pure, non-module domain model (`shared/domain.js`) and
+application use-case layer (`shared/application.js`), copied into each static client package,
+before their UI scripts. Settings also includes a persisted
 **Pause Live Conway Animation** toggle for stopping and resuming background animation work.
 The CI checks that the canonical domain service and both client controllers remain synchronized.
 
@@ -265,15 +266,16 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 ```text
 .
 ├── docs/                       # GitHub Pages web app and PWA assets
-│   └── shared/domain.js        # Browser-compatible domain service copy
+│   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
 │   ├── popup.html
 │   ├── popup.js
 │   ├── background.js
 │   ├── google_sync.js
-│   └── shared/domain.js
-├── shared/domain.js             # Canonical domain/application service
+│   └── shared/
+├── shared/domain.js             # Canonical pure domain model
+├── shared/application.js        # Canonical application use cases
 ├── tests/domain.test.js         # Domain behavior checks
 ├── package_extension.sh        # Creates Firefox XPI and ZIP packages
 ├── FEATURE_GUIDE.md            # Detailed feature documentation

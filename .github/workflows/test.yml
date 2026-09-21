@@ -30,9 +30,12 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check shared/domain.js
+          node --check shared/application.js
           node --check tests/domain.test.js
           node --check docs/shared/domain.js
+          node --check docs/shared/application.js
           node --check extension/shared/domain.js
+          node --check extension/shared/application.js
           node --check docs/popup.js
           node --check docs/google_sync.js
           node --check docs/sw.js
@@ -45,14 +48,18 @@ jobs:
           test -f docs/index.html
           test -f docs/manifest.webmanifest
           test -f docs/shared/domain.js
+          test -f docs/shared/application.js
           test -f extension/popup.html
           test -f extension/manifest.json
           test -f extension/shared/domain.js
+          test -f extension/shared/application.js
 
       - name: Check synchronized client copies
         run: |
           cmp --silent shared/domain.js docs/shared/domain.js
           cmp --silent shared/domain.js extension/shared/domain.js
+          cmp --silent shared/application.js docs/shared/application.js
+          cmp --silent shared/application.js extension/shared/application.js
           cmp --silent docs/popup.js extension/popup.js
 
       - name: Run domain tests

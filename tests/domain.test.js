@@ -5,11 +5,17 @@ const vm = require("node:vm");
 function loadDomain(path) {
   const context = { console, Date, Math, Object, String, Number, isFinite, isNaN };
   vm.runInNewContext(fs.readFileSync(path, "utf8"), context, { filename: path });
-  return context.FinanceDomain;
+  return { context, domain: context.FinanceDomain };
 }
 
 for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shared/domain.js"]) {
-  const domain = loadDomain(path);
+  const loaded = loadDomain(path);
+  const applicationPath = path.replace("domain.js", "application.js");
+  vm.runInContext(fs.readFileSync(applicationPath, "utf8"), loaded.context, { filename: applicationPath });
+  const domain = loaded.domain;
+  const application = loaded.context.FinanceApplication;
+  assert.equal(typeof domain.recordTransaction, "undefined");
+  assert.equal(typeof application.recordTransaction, "function");
   assert.equal(domain.parseAmount("₱1,234.50"), 1234.5);
 
   const projection = domain.calculateLedger(
@@ -42,8 +48,8 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(stashes[0].status, "Active");
   assert.notEqual(stashes, []);
   assert.equal(domain.unstash(stashes, "stash-1").item.id, "stash-1");
-  assert.equal(domain.enqueue([], { op: "ADD_TX" }, "fixed")[0].timestamp, "fixed");
-  const recorded = domain.recordTransaction(
+  assert.equal(application.enqueue([], { op: "ADD_TX" }, "fixed")[0].timestamp, "fixed");
+  const recorded = application.recordTransaction(
     [{ id: "older" }],
     [],
     { id: "newer", type: "Expense", amount: 25 },
@@ -54,21 +60,21 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(recorded.syncQueue[0].op, "ADD_TX");
   assert.equal(recorded.syncQueue[0].data.id, "newer");
   assert.equal(recorded.syncQueue[0].timestamp, "fixed");
-  const edited = domain.editTransaction(recorded.transactions, recorded.syncQueue, "newer", { amount: 30 }, "edited-time");
+  const edited = application.editTransaction(recorded.transactions, recorded.syncQueue, "newer", { amount: 30 }, "edited-time");
   assert.equal(edited.old.amount, 25);
   assert.equal(edited.updated.amount, 30);
   assert.equal(edited.updated.edited, true);
   assert.equal(edited.updated.edited_at, "edited-time");
   assert.equal(edited.syncQueue.at(-1).op, "EDIT_TX");
-  const deleted = domain.deleteTransaction(edited.transactions, edited.syncQueue, "newer", "deleted-time");
+  const deleted = application.deleteTransaction(edited.transactions, edited.syncQueue, "newer", "deleted-time");
   assert.equal(deleted.found.id, "newer");
   assert.equal(deleted.transactions.some(transaction => transaction.id === "newer"), false);
   assert.equal(deleted.syncQueue.at(-1).op, "DEL_TX");
   const debt = { id: "debt-1", person: "Alex", direction: "I Owe", amount: 100, paid: 0, status: "Active" };
-  const addedDebt = domain.addDebt([], [], debt, "debt-time");
+  const addedDebt = application.addDebt([], [], debt, "debt-time");
   assert.equal(addedDebt.debts[0].id, "debt-1");
   assert.equal(addedDebt.syncQueue[0].op, "ADD_DEBT");
-  const settledDebt = domain.settleDebtState(
+  const settledDebt = application.settleDebtState(
     addedDebt.debts,
     [],
     addedDebt.syncQueue,
@@ -82,7 +88,7 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(settledDebt.transactions[0].id, "tx-debt");
   assert.equal(settledDebt.syncQueue.at(-2).op, "ADD_TX");
   assert.equal(settledDebt.syncQueue.at(-1).op, "SETTLE_DEBT");
-  const removedDebt = domain.deleteDebt(
+  const removedDebt = application.deleteDebt(
     settledDebt.debts,
     settledDebt.transactions,
     settledDebt.syncQueue,
@@ -95,7 +101,7 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(removedDebt.syncQueue.at(-2).op, "DEL_DEBT");
   assert.equal(removedDebt.syncQueue.at(-1).op, "DEL_TX");
   const stashTransaction = { id: "tx-stash", type: "Allowance", amount: 50 };
-  const unstashed = domain.unstashState(
+  const unstashed = application.unstashState(
     [{ id: "stash-1", amount: 50, note: "Reserve", date: "2026-09-24" }],
     [],
     [],
@@ -108,7 +114,7 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(unstashed.transactions[0].id, "tx-stash");
   assert.equal(unstashed.syncQueue.at(-2).op, "ADD_TX");
   assert.equal(unstashed.syncQueue.at(-1).op, "SYNC_STASHES");
-  const discarded = domain.deleteStash(
+  const discarded = application.deleteStash(
     [{ id: "stash-2", amount: 25, note: "Emergency", date: "2026-09-24" }],
     unstashed.syncQueue,
     "stash-2",
@@ -117,14 +123,14 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(discarded.item.id, "stash-2");
   assert.equal(discarded.stashes.length, 0);
   assert.equal(discarded.syncQueue.at(-1).data.status, "Discarded");
-  const settings = domain.updateSettings(
+  const settings = application.updateSettings(
     { dailyRollover: false, googleAuth: { clientId: "old", spreadsheetId: "" } },
     { dailyRollover: true, googleAuth: { clientId: "new" } }
   );
   assert.equal(settings.dailyRollover, true);
   assert.equal(settings.googleAuth.clientId, "new");
   assert.equal(settings.googleAuth.spreadsheetId, "");
-  const merged = domain.mergeCloudData(
+  const merged = application.mergeCloudData(
     {
       transactions: [{ id: "local", date: "2026-09-24" }],
       debts: [],
@@ -142,17 +148,17 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(merged.state.transactions.length, 2);
   assert.equal(merged.state.presets.length, 2);
   assert.equal(merged.state.auditLog.length, 2);
-  assert.equal(domain.updateSettings({}, { disableBgAnimation: true }).disableBgAnimation, true);
-  const ignoredSetting = domain.updateSettings({ dailyRollover: true }, { unknown: "ignored" });
+  assert.equal(application.updateSettings({}, { disableBgAnimation: true }).disableBgAnimation, true);
+  const ignoredSetting = application.updateSettings({ dailyRollover: true }, { unknown: "ignored" });
   assert.equal(ignoredSetting.dailyRollover, true);
   assert.equal(Object.prototype.hasOwnProperty.call(ignoredSetting, "unknown"), false);
   const unchangedInput = { transactions: [{ id: "same" }], debts: [], stashes: [], presets: [], auditLog: [] };
-  const unchanged = domain.mergeCloudData(unchangedInput, {});
+  const unchanged = application.mergeCloudData(unchangedInput, {});
   assert.equal(unchanged.updated, false);
   assert.equal(unchanged.state.transactions.length, 1);
   assert.notEqual(unchanged.state.transactions, unchangedInput.transactions);
-  assert.equal(domain.unstashState([], [], [], "missing").item, null);
-  assert.equal(domain.deleteStash([], [], "missing").item, null);
+  assert.equal(application.unstashState([], [], [], "missing").item, null);
+  assert.equal(application.deleteStash([], [], "missing").item, null);
 }
 
 assert.equal(
@@ -164,6 +170,16 @@ assert.equal(
   fs.readFileSync("shared/domain.js", "utf8"),
   fs.readFileSync("extension/shared/domain.js", "utf8"),
   "extension domain copy must match canonical service"
+);
+assert.equal(
+  fs.readFileSync("shared/application.js", "utf8"),
+  fs.readFileSync("docs/shared/application.js", "utf8"),
+  "PWA application copy must match canonical service"
+);
+assert.equal(
+  fs.readFileSync("shared/application.js", "utf8"),
+  fs.readFileSync("extension/shared/application.js", "utf8"),
+  "extension application copy must match canonical service"
 );
 assert.equal(
   fs.readFileSync("docs/popup.js", "utf8"),
