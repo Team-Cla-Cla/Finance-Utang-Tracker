@@ -270,6 +270,8 @@ Feature-specific presentation controllers are extracted incrementally; the trans
 controller now owns entry submission and transaction mutation UI orchestration.
 The debt controller similarly owns debt entry, settlement, deletion, and settlement-modal
 presentation orchestration while delegating state transitions to `FinanceApplication`.
+The stash controller owns reserve creation, unstashing, deletion, and stash rendering
+presentation behavior.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
