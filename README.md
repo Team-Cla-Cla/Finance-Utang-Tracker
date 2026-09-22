@@ -279,6 +279,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   │   └── events.js            # GUI event registration controller
 │   │   └── rendering.js         # Finance UI rendering controller
 │   │   └── edit-audit.js        # Edit modal and audit controller
+│   │   └── bootstrap.js         # Application startup entry point
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json

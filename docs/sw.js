@@ -19,6 +19,7 @@ const ASSETS_TO_CACHE = [
   "./client/events.js?v=0.9.1",
   "./client/rendering.js?v=0.9.1",
   "./client/edit-audit.js?v=0.9.1",
+  "./client/bootstrap.js?v=0.9.1",
   "./popup.js?v=0.9.1",
   "./google_sync.js?v=0.9.1",
   "./manifest.webmanifest",
