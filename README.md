@@ -276,6 +276,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   │   └── stashes.js           # Stash feature controller
 │   │   └── presets.js           # Preset management controller
 │   │   └── sync.js              # Google synchronization controller
+│   │   └── events.js            # GUI event registration controller
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
