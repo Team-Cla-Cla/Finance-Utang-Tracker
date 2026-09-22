@@ -15,6 +15,7 @@ const ASSETS_TO_CACHE = [
   "./client/debts.js?v=0.9.1",
   "./client/stashes.js?v=0.9.1",
   "./client/presets.js?v=0.9.1",
+  "./client/sync.js?v=0.9.1",
   "./popup.js?v=0.9.1",
   "./google_sync.js?v=0.9.1",
   "./manifest.webmanifest",

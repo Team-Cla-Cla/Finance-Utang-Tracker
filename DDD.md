@@ -273,6 +273,8 @@ presentation orchestration while delegating state transitions to `FinanceApplica
 The stash controller owns reserve creation, unstashing, deletion, and stash rendering
 presentation behavior.
 The presets controller owns quick-entry preset management and its modal presentation.
+The sync controller owns cloud hydration, queue flushing, OAuth login state, export, and
+reset orchestration while `google_sync.js` remains the transport adapter.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
