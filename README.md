@@ -274,6 +274,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   │   └── transactions.js     # Transaction feature controller
 │   │   └── debts.js             # Debt feature controller
 │   │   └── stashes.js           # Stash feature controller
+│   │   └── presets.js           # Preset management controller
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
