@@ -277,6 +277,7 @@ The sync controller owns cloud hydration, queue flushing, OAuth login state, exp
 reset orchestration while `google_sync.js` remains the transport adapter.
 The events controller owns DOM event registration, modal interactions, keyboard handling,
 and calendar navigation wiring.
+The rendering controller owns finance summary, feed, debt-list, pill, and mode presentation.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
