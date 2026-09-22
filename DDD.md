@@ -272,6 +272,7 @@ The debt controller similarly owns debt entry, settlement, deletion, and settlem
 presentation orchestration while delegating state transitions to `FinanceApplication`.
 The stash controller owns reserve creation, unstashing, deletion, and stash rendering
 presentation behavior.
+The presets controller owns quick-entry preset management and its modal presentation.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
