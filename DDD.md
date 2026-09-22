@@ -280,6 +280,8 @@ and calendar navigation wiring.
 The rendering controller owns finance summary, feed, debt-list, pill, and mode presentation.
 The edit/audit controller owns transaction edit-modal behavior and audit-log mutation
 presentation.
+The bootstrap entry point owns startup sequencing only: default dates, initial rendering,
+local-state hydration, and post-OAuth synchronization.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
