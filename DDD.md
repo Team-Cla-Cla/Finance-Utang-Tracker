@@ -278,6 +278,8 @@ reset orchestration while `google_sync.js` remains the transport adapter.
 The events controller owns DOM event registration, modal interactions, keyboard handling,
 and calendar navigation wiring.
 The rendering controller owns finance summary, feed, debt-list, pill, and mode presentation.
+The edit/audit controller owns transaction edit-modal behavior and audit-log mutation
+presentation.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation

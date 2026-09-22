@@ -278,6 +278,7 @@ This creates an `.xpi` file and a ZIP archive in the repository root.
 │   │   └── sync.js              # Google synchronization controller
 │   │   └── events.js            # GUI event registration controller
 │   │   └── rendering.js         # Finance UI rendering controller
+│   │   └── edit-audit.js        # Edit modal and audit controller
 │   └── shared/                 # Browser-compatible domain and application copies
 ├── extension/                  # Browser extension source
 │   ├── manifest.json
