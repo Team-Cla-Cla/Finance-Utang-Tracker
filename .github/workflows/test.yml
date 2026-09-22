@@ -44,6 +44,7 @@ jobs:
           node --check docs/client/stashes.js
           node --check docs/client/presets.js
           node --check docs/client/sync.js
+          node --check docs/client/events.js
           node --check extension/shared/domain.js
           node --check extension/shared/application.js
           node --check extension/client/state.js
@@ -56,6 +57,7 @@ jobs:
           node --check extension/client/stashes.js
           node --check extension/client/presets.js
           node --check extension/client/sync.js
+          node --check extension/client/events.js
           node --check docs/popup.js
           node --check docs/google_sync.js
           node --check docs/sw.js
@@ -80,6 +82,7 @@ jobs:
           test -f docs/client/stashes.js
           test -f docs/client/presets.js
           test -f docs/client/sync.js
+          test -f docs/client/events.js
           test -f extension/popup.html
           test -f extension/manifest.json
           test -f extension/shared/domain.js
@@ -95,6 +98,7 @@ jobs:
           test -f extension/client/stashes.js
           test -f extension/client/presets.js
           test -f extension/client/sync.js
+          test -f extension/client/events.js
 
       - name: Check synchronized client copies
         run: |
@@ -113,6 +117,7 @@ jobs:
           cmp --silent docs/client/stashes.js extension/client/stashes.js
           cmp --silent docs/client/presets.js extension/client/presets.js
           cmp --silent docs/client/sync.js extension/client/sync.js
+          cmp --silent docs/client/events.js extension/client/events.js
           cmp --silent docs/index.html extension/popup.html
           cmp --silent docs/popup.js extension/popup.js
 

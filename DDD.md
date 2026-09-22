@@ -275,6 +275,8 @@ presentation behavior.
 The presets controller owns quick-entry preset management and its modal presentation.
 The sync controller owns cloud hydration, queue flushing, OAuth login state, export, and
 reset orchestration while `google_sync.js` remains the transport adapter.
+The events controller owns DOM event registration, modal interactions, keyboard handling,
+and calendar navigation wiring.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
