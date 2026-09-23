@@ -590,7 +590,7 @@
   <script src="client/bootstrap.js?v=0.9.1"></script>
   <script src="popup.js?v=0.9.1"></script>
   <script>
-    if ("serviceWorker" in navigator && (window.location.protocol === "https:" || window.location.hostname === "localhost")) {
+    if ("serviceWorker" in navigator && (window.isSecureContext || window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW register notice:", err));
       });
