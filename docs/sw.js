@@ -19,6 +19,7 @@ const ASSETS_TO_CACHE = [
   "./client/presets.js?v=0.9.1",
   "./client/sync.js?v=0.9.1",
   "./client/event-listeners.js?v=0.9.1",
+  "./client/form-utang.js?v=0.9.1",
   "./client/ui-render.js?v=0.9.1",
   "./client/edit-modal.js?v=0.9.1",
   "./client/audit.js?v=0.9.1",
