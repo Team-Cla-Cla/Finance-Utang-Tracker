@@ -62,7 +62,7 @@ self.addEventListener("fetch", (event) => {
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -72,8 +72,8 @@ self.addEventListener("fetch", (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // Offline and resource not in cache
-        if (event.request.headers.get("accept")?.includes("text/html")) {
+        // Offline fallback for navigation / html requests
+        if (event.request.mode === "navigate" || event.request.headers.get("accept")?.includes("text/html")) {
           return caches.match("./index.html");
         }
       });
