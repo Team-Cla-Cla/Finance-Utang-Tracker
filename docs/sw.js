@@ -1,11 +1,33 @@
 // Service Worker for Finance & Utang Tracker (Offline-First PWA)
-const CACHE_NAME = "finance-tracker-v0.9.1";
+const CACHE_NAME = "finance-tracker-v1.0.0";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
-  "./shared/domain.js?v=0.9.1",
-  "./popup.js?v=0.9.1",
-  "./google_sync.js?v=0.9.1",
+  "./styles/app.css?v=1.0.0",
+  "./shared/domain.js?v=1.0.0",
+  "./shared/application.js?v=1.0.0",
+  "./client/helpers.js?v=1.0.0",
+  "./client/state.js?v=1.0.0",
+  "./client/status.js?v=1.0.0",
+  "./client/canvas-orbs.js?v=1.0.0",
+  "./client/canvas-gol.js?v=1.0.0",
+  "./client/canvas-telemetry.js?v=1.0.0",
+  "./client/canvas-background.js?v=1.0.0",
+  "./client/analytics.js?v=1.0.0",
+  "./client/calendar.js?v=1.0.0",
+  "./client/transactions.js?v=1.0.0",
+  "./client/debts.js?v=1.0.0",
+  "./client/stashes.js?v=1.0.0",
+  "./client/presets.js?v=1.0.0",
+  "./client/sync.js?v=1.0.0",
+  "./client/event-listeners.js?v=1.0.0",
+  "./client/form-utang.js?v=1.0.0",
+  "./client/ui-render.js?v=1.0.0",
+  "./client/edit-modal.js?v=1.0.0",
+  "./client/audit.js?v=1.0.0",
+  "./google_sync.js?v=1.0.0",
+  "./client/bootstrap.js?v=1.0.0",
+  "./popup.js?v=1.0.0",
   "./manifest.webmanifest",
   "./icons/icon.svg",
   "./icons/icon16.png",
@@ -40,7 +62,7 @@ self.addEventListener("fetch", (event) => {
   if (!event.request.url.startsWith(self.location.origin)) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
@@ -50,8 +72,8 @@ self.addEventListener("fetch", (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // Offline and resource not in cache
-        if (event.request.headers.get("accept")?.includes("text/html")) {
+        // Offline fallback for navigation / html requests
+        if (event.request.mode === "navigate" || event.request.headers.get("accept")?.includes("text/html")) {
           return caches.match("./index.html");
         }
       });

@@ -234,20 +234,54 @@ When an operation involves business rules across multiple aggregates, it is enca
 
 ## 4. Hexagonal Architecture (Ports & Adapters)
 
-The static web client and WebExtension share the browser-compatible pure domain/application
-service in `shared/domain.js` (packaged as `docs/shared/domain.js` and
-`extension/shared/domain.js`). The popup adapters delegate to it for:
+The static web client and WebExtension share two browser-compatible layers:
 
-* transaction/ledger parsing and balance calculations;
-* debt settlement arithmetic and pay-now projections;
-* stash deposit/unstash mutations; and
+* `shared/domain.js` is the pure domain model. It owns money parsing, ledger projections,
+  debt arithmetic, and stash invariants without queue, storage, network, or DOM concerns.
+* `shared/application.js` contains use cases. It coordinates domain services with immutable
+  state transitions and sync mutations, but still has no browser, storage, network, or DOM
+  dependencies. It is packaged as `docs/shared/application.js` and
+  `extension/shared/application.js`.
+
+The popup scripts are presentation adapters. They own event handlers, prompts, rendering,
+browser storage, and Google API calls, and delegate business actions to the application layer:
+
+* transaction, debt, and stash use cases;
 * immutable sync-queue mutation;
-* settings updates and deterministic cloud-state merging.
+* settings updates; and
+* deterministic cloud-state merging.
 
-The service deliberately uses a global namespace rather than ES module syntax so it works
-when loaded by static HTML and WebExtension manifests without a build step. UI rendering, browser storage, OAuth, and Sheets transport remain adapters in the client
-scripts. The synchronization adapter owns network orchestration while the shared service
-owns the state merge and settings invariants.
+Both layers deliberately use global namespaces rather than ES module syntax so they work when
+loaded by static HTML and WebExtension manifests without a build step. The synchronization
+adapter owns network orchestration while the application layer owns the state merge and
+settings invariants.
+
+Static presentation assets are also synchronized: `docs/styles/app.css` and
+`extension/styles/app.css` contain the shared stylesheet, while each HTML entry point keeps
+only its client-specific markup and script loading order.
+
+The client infrastructure is split into small browser adapters as well: `client/state.js`
+owns in-memory state and browser persistence, while `client/status.js` owns status and sync
+badge presentation. Feature controllers remain next candidates for extraction from the
+large popup adapter. `client/background.js` owns the Conway, ambient-orb, and telemetry
+canvas presentation subsystem. `client/analytics.js` and `client/calendar.js` own the
+analytics and calendar/chronometer presentation subsystems respectively.
+Feature-specific presentation controllers are extracted incrementally; the transaction
+controller now owns entry submission and transaction mutation UI orchestration.
+The debt controller similarly owns debt entry, settlement, deletion, and settlement-modal
+presentation orchestration while delegating state transitions to `FinanceApplication`.
+The stash controller owns reserve creation, unstashing, deletion, and stash rendering
+presentation behavior.
+The presets controller owns quick-entry preset management and its modal presentation.
+The sync controller owns cloud hydration, queue flushing, OAuth login state, export, and
+reset orchestration while `google_sync.js` remains the transport adapter.
+The events controller owns DOM event registration, modal interactions, keyboard handling,
+and calendar navigation wiring.
+The rendering controller owns finance summary, feed, debt-list, pill, and mode presentation.
+The edit/audit controller owns transaction edit-modal behavior and audit-log mutation
+presentation.
+The bootstrap entry point owns startup sequencing only: default dates, initial rendering,
+local-state hydration, and post-OAuth synchronization.
 
 The Settings modal exposes the persisted `disableBgAnimation` state as **Pause Live Conway
 Animation**. Pausing cancels the pending animation frame and prevents subsequent animation
