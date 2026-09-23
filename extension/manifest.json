@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Finance & Utang Tracker",
-  "version": "0.9.1",
+  "version": "1.0.0",
   "description": "Offline-first personal finance, allowance & utang tracker with direct Google Sheets sync",
   "action": {
     "default_popup": "popup.html",

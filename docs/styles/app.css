@@ -295,6 +295,7 @@
       user-select: none;
     }
     .icon-btn:hover { color: var(--text); border-color: #3f3f46; background: #27272a; }
+    .icon-btn svg { display: block; pointer-events: none; }
 
     @media (max-width: 480px) {
       header {

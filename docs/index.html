@@ -15,7 +15,7 @@
       document.documentElement.classList.add("web-mode");
     }
   </script>
-  <link rel="stylesheet" href="styles/app.css?v=0.9.1">
+  <link rel="stylesheet" href="styles/app.css?v=1.0.0">
 </head>
 <body>
   <!-- Fullscreen Interactive Circle Matrix Canvas -->
@@ -30,7 +30,7 @@
       <div class="header-actions">
         <span id="dateLabel" class="mono">--</span>
         <button id="btnToggleFontSize" class="icon-btn" title="Toggle Larger Font Size" style="font-weight:600;">A+</button>
-        <button id="btnAnalytics" class="icon-btn" title="Metrics &amp; Missed Days">📊</button>
+        <button id="btnAnalytics" class="icon-btn" title="Metrics &amp; Missed Days" aria-label="Metrics &amp; Missed Days"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></button>
         <button id="btnOpenTab" class="icon-btn" title="Open in Full Tab">↗</button>
         <button id="btnSettings" class="icon-btn" title="Settings &amp; Google Account">⚙</button>
       </div>
@@ -565,30 +565,30 @@
     </div>
   </div>
 
-  <script src="shared/domain.js?v=0.9.1"></script>
-  <script src="shared/application.js?v=0.9.1"></script>
-  <script src="client/helpers.js?v=0.9.1"></script>
-  <script src="client/state.js?v=0.9.1"></script>
-  <script src="client/status.js?v=0.9.1"></script>
-  <script src="client/canvas-orbs.js?v=0.9.1"></script>
-  <script src="client/canvas-gol.js?v=0.9.1"></script>
-  <script src="client/canvas-telemetry.js?v=0.9.1"></script>
-  <script src="client/canvas-background.js?v=0.9.1"></script>
-  <script src="client/analytics.js?v=0.9.1"></script>
-  <script src="client/calendar.js?v=0.9.1"></script>
-  <script src="client/transactions.js?v=0.9.1"></script>
-  <script src="client/debts.js?v=0.9.1"></script>
-  <script src="client/stashes.js?v=0.9.1"></script>
-  <script src="client/presets.js?v=0.9.1"></script>
-  <script src="client/sync.js?v=0.9.1"></script>
-  <script src="client/event-listeners.js?v=0.9.1"></script>
-  <script src="client/form-utang.js?v=0.9.1"></script>
-  <script src="client/ui-render.js?v=0.9.1"></script>
-  <script src="client/edit-modal.js?v=0.9.1"></script>
-  <script src="client/audit.js?v=0.9.1"></script>
-  <script src="google_sync.js?v=0.9.1"></script>
-  <script src="client/bootstrap.js?v=0.9.1"></script>
-  <script src="popup.js?v=0.9.1"></script>
+  <script src="shared/domain.js?v=1.0.0"></script>
+  <script src="shared/application.js?v=1.0.0"></script>
+  <script src="client/helpers.js?v=1.0.0"></script>
+  <script src="client/state.js?v=1.0.0"></script>
+  <script src="client/status.js?v=1.0.0"></script>
+  <script src="client/canvas-orbs.js?v=1.0.0"></script>
+  <script src="client/canvas-gol.js?v=1.0.0"></script>
+  <script src="client/canvas-telemetry.js?v=1.0.0"></script>
+  <script src="client/canvas-background.js?v=1.0.0"></script>
+  <script src="client/analytics.js?v=1.0.0"></script>
+  <script src="client/calendar.js?v=1.0.0"></script>
+  <script src="client/transactions.js?v=1.0.0"></script>
+  <script src="client/debts.js?v=1.0.0"></script>
+  <script src="client/stashes.js?v=1.0.0"></script>
+  <script src="client/presets.js?v=1.0.0"></script>
+  <script src="client/sync.js?v=1.0.0"></script>
+  <script src="client/event-listeners.js?v=1.0.0"></script>
+  <script src="client/form-utang.js?v=1.0.0"></script>
+  <script src="client/ui-render.js?v=1.0.0"></script>
+  <script src="client/edit-modal.js?v=1.0.0"></script>
+  <script src="client/audit.js?v=1.0.0"></script>
+  <script src="google_sync.js?v=1.0.0"></script>
+  <script src="client/bootstrap.js?v=1.0.0"></script>
+  <script src="popup.js?v=1.0.0"></script>
   <script>
     if ("serviceWorker" in navigator && (window.isSecureContext || window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       window.addEventListener("load", () => {
