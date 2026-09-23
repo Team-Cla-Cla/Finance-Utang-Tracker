@@ -77,6 +77,39 @@ for (let i = 0; i < 110; i++) {
 }
 assert.equal(ctx.appState.auditLog.length, 100);
 
+// 3. LocalStorage Corrupted State Resilience Test
+const stateCtx = {
+  console,
+  Date,
+  Math,
+  Object,
+  String,
+  Number,
+  isFinite,
+  isNaN,
+  Array,
+  JSON,
+  getLocalDateStr: () => "2026-09-24",
+  localStorage: {
+    store: {
+      transactions: "CORRUPTED_JSON_[[[",
+      debts: "{not a valid json}",
+      installDate: '"2026-09-24"'
+    },
+    getItem: function (k) { return this.store[k] || null; },
+    setItem: function (k, v) { this.store[k] = String(v); }
+  }
+};
+vm.runInNewContext(fs.readFileSync("docs/client/state.js", "utf8"), stateCtx, { filename: "docs/client/state.js" });
+let callbackRan = false;
+stateCtx.loadLocalState(() => {
+  callbackRan = true;
+});
+assert.equal(callbackRan, true, "loadLocalState callback must run even if localStorage is corrupted");
+const finalState = vm.runInContext("appState", stateCtx);
+assert.ok(Array.isArray(finalState.transactions), "transactions must fall back to array");
+assert.ok(Array.isArray(finalState.debts), "debts must fall back to array");
+
 // 3. Client Module Parity Check (docs/client/ vs extension/client/)
 const docsClientDir = "docs/client";
 const extClientDir = "extension/client";

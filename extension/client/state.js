@@ -64,6 +64,16 @@ function loadLocalState(callback) {
     });
   } else {
     // LocalStorage fallback
+    function safeParse(val, fallback) {
+      if (!val) return fallback;
+      try {
+        const parsed = JSON.parse(val);
+        return parsed !== null && parsed !== undefined ? parsed : fallback;
+      } catch (_) {
+        return fallback;
+      }
+    }
+
     const t = localStorage.getItem("transactions");
     const d = localStorage.getItem("debts");
     const p = localStorage.getItem("presets");
@@ -76,22 +86,25 @@ function loadLocalState(callback) {
     const al = localStorage.getItem("auditLog");
     const q = localStorage.getItem("syncQueue");
     const a = localStorage.getItem("googleAuth");
-    if (t) appState.transactions = JSON.parse(t);
-    if (d) appState.debts = JSON.parse(d);
-    if (p) appState.presets = JSON.parse(p);
-    if (s) appState.stashes = JSON.parse(s);
-    if (sm) appState.stashMasked = JSON.parse(sm);
-    if (ro) appState.dailyRollover = JSON.parse(ro);
-    if (lf) appState.largeFont = JSON.parse(lf);
-    if (da !== null && da !== undefined) appState.disableBgAnimation = JSON.parse(da);
-    if (idt) appState.installDate = JSON.parse(idt);
+
+    if (t) appState.transactions = safeParse(t, appState.transactions);
+    if (d) appState.debts = safeParse(d, appState.debts);
+    if (p) appState.presets = safeParse(p, appState.presets);
+    if (s) appState.stashes = safeParse(s, appState.stashes);
+    if (sm) appState.stashMasked = safeParse(sm, appState.stashMasked);
+    if (ro) appState.dailyRollover = safeParse(ro, appState.dailyRollover);
+    if (lf) appState.largeFont = safeParse(lf, appState.largeFont);
+    if (da !== null && da !== undefined) appState.disableBgAnimation = safeParse(da, appState.disableBgAnimation);
+    if (idt) appState.installDate = safeParse(idt, null);
     if (!appState.installDate) {
       appState.installDate = getLocalDateStr();
-      localStorage.setItem("installDate", JSON.stringify(appState.installDate));
+      try {
+        localStorage.setItem("installDate", JSON.stringify(appState.installDate));
+      } catch (_) {}
     }
-    if (al) appState.auditLog = JSON.parse(al);
-    if (q) appState.syncQueue = JSON.parse(q);
-    if (a) appState.googleAuth = JSON.parse(a);
+    if (al) appState.auditLog = safeParse(al, appState.auditLog);
+    if (q) appState.syncQueue = safeParse(q, appState.syncQueue);
+    if (a) appState.googleAuth = safeParse(a, appState.googleAuth);
     if (callback) callback();
   }
 }
