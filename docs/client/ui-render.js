@@ -4,15 +4,6 @@ function computeMetrics() {
   return FinanceDomain.calculateLedger(appState.transactions, appState.debts, appState.dailyRollover, new Date());
 }
 
-// Strict Amount Parser: handles integers, decimals, commas, currency prefixes, and avoids float glitches
-function parseAmount(val) {
-  return FinanceDomain.parseAmount(val);
-}
-
-function getLocalDateStr(d) {
-  return FinanceDomain.getLocalDateStr(d);
-}
-
 // --- Render UI ---
 function renderUI() {
   const m = computeMetrics();
@@ -198,16 +189,6 @@ function fill(amount, category, note) {
   if (category) document.getElementById("fCat").value = category;
   if (note) document.getElementById("fNote").value = note;
   document.getElementById("fAmt").focus();
-}
-
-function escapeHtml(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
 }
 
 // --- Mode Switching ---

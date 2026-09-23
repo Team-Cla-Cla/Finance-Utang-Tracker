@@ -6,6 +6,7 @@ const ASSETS_TO_CACHE = [
   "./styles/app.css?v=0.9.1",
   "./shared/domain.js?v=0.9.1",
   "./shared/application.js?v=0.9.1",
+  "./client/helpers.js?v=0.9.1",
   "./client/state.js?v=0.9.1",
   "./client/status.js?v=0.9.1",
   "./client/canvas-background.js?v=0.9.1",
