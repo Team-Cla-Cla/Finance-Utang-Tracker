@@ -17,6 +17,12 @@ for (const path of ["shared/domain.js", "docs/shared/domain.js", "extension/shar
   assert.equal(typeof domain.recordTransaction, "undefined");
   assert.equal(typeof application.recordTransaction, "function");
   assert.equal(domain.parseAmount("₱1,234.50"), 1234.5);
+  assert.equal(domain.parseAmount("-50"), -50);
+  assert.equal(domain.parseAmount("   "), 0);
+  assert.equal(domain.parseAmount(null), 0);
+  assert.equal(domain.parseAmount(undefined), 0);
+  assert.equal(domain.parseAmount("0.00"), 0);
+  assert.equal(domain.parseAmount(0.1 + 0.2), 0.3);
 
   const projection = domain.calculateLedger(
     [
