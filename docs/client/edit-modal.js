@@ -1,4 +1,4 @@
-// Edit modal and audit presentation controller.
+// Edit entry modal presentation controller.
 // --- Edit Entry Modal ---
 function openEdit(tx) {
   document.getElementById("eId").value = tx.id;
@@ -34,23 +34,3 @@ function submitEdit(e) {
   closeEdit();
   showStatus("Updated " + amt.toFixed(2), false);
 }
-
-// --- Audit Trail Logging ---
-function logAudit(event) {
-  if (!appState.auditLog) appState.auditLog = [];
-  const entry = {
-    id: "aud_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
-    timestamp: new Date().toISOString(),
-    date: getLocalDateStr(),
-    action: event.action || "EVENT",
-    targetId: event.targetId || "",
-    summary: event.summary || "",
-    details: event.details || null
-  };
-  appState.auditLog.unshift(entry);
-  if (appState.auditLog.length > 100) appState.auditLog.pop();
-
-  queueSyncItem({ op: "AUDIT_LOG", data: entry });
-  persistState();
-}
-
