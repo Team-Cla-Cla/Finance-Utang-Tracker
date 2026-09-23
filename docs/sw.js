@@ -11,6 +11,7 @@ const ASSETS_TO_CACHE = [
   "./client/status.js?v=0.9.1",
   "./client/canvas-orbs.js?v=0.9.1",
   "./client/canvas-gol.js?v=0.9.1",
+  "./client/canvas-telemetry.js?v=0.9.1",
   "./client/canvas-background.js?v=0.9.1",
   "./client/analytics.js?v=0.9.1",
   "./client/calendar.js?v=0.9.1",
