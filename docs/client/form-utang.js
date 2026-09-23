@@ -62,6 +62,12 @@ function submitUtang(e) {
     });
   }
 
+  logAudit({
+    action: "ADD_UTANG",
+    targetId: debtId,
+    summary: `Recorded ${isIOwe ? 'utang (I owe)' : 'pautang (owes me)'}: ${amt.toFixed(2)} (${person})`
+  });
+
   addDebt(debt);
 
   document.getElementById("uPerson").value = "";

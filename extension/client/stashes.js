@@ -32,6 +32,11 @@ function addStash(amount, note, date) {
 
   queueSyncItem({ op: "ADD_TX", data: tx });
   queueSyncItem({ op: "SYNC_STASHES", data: stash });
+  logAudit({
+    action: "ADD_STASH",
+    targetId: stashId,
+    summary: `Stashed ${amt.toFixed(2)} into vault (${cleanNote})`
+  });
   persistState();
   renderUI();
   showStatus(`Stashed ${amt.toFixed(2)} into Vault`, false);

@@ -67,6 +67,11 @@ function submitEntry(e) {
   };
 
   addTransaction(tx);
+  logAudit({
+    action: tx.type === "Allowance" ? "ADD_ALLOWANCE" : "ADD_EXPENSE",
+    targetId: tx.id,
+    summary: `${tx.type === "Allowance" ? 'Added allowance' : 'Added expense'}: ${amt.toFixed(2)} (${tx.category}${tx.notes ? ' · ' + tx.notes : ''})`
+  });
   document.getElementById("fAmt").value = "";
   document.getElementById("fNote").value = "";
   showStatus("Saved " + amt.toFixed(2), false);
