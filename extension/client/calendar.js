@@ -166,15 +166,22 @@ function updateCalendarDayInspector(dayData, dateStr) {
 
   if (!inspDate) return;
 
-  const [y, m, d] = dateStr.split("-").map(Number);
+  const validDateStr = (typeof dateStr === "string" && dateStr.includes("-")) ? dateStr : getLocalDateStr();
+  const safeData = (dayData && typeof dayData === "object") ? dayData : { allowance: 0, expense: 0, txs: [] };
+
+  const [y, m, d] = validDateStr.split("-").map(Number);
   const dateObj = new Date(y, m - 1, d);
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  inspDate.textContent = `${dayNames[dateObj.getDay()]}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+  if (isNaN(dateObj.getTime())) {
+    inspDate.textContent = validDateStr;
+  } else {
+    inspDate.textContent = `${dayNames[dateObj.getDay()]}, ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}`;
+  }
   
-  const spent = dayData.expense || 0;
-  const inc = dayData.allowance || 0;
+  const spent = Number(safeData.expense) || 0;
+  const inc = Number(safeData.allowance) || 0;
   const net = inc - spent;
 
   if (inspSpent) inspSpent.textContent = spent.toFixed(2);
@@ -186,10 +193,10 @@ function updateCalendarDayInspector(dayData, dateStr) {
 
   if (txList) {
     txList.innerHTML = "";
-    if (!dayData.txs || dayData.txs.length === 0) {
+    if (!safeData.txs || safeData.txs.length === 0) {
       txList.innerHTML = `<div style="color:var(--muted); font-size:0.62rem; padding:2px 0;">No entries recorded on this date</div>`;
     } else {
-      dayData.txs.forEach(t => {
+      safeData.txs.forEach(t => {
         const row = document.createElement("div");
         row.className = "cal-tx-mini";
         const isExp = (t.type || "").toLowerCase() !== "allowance";
