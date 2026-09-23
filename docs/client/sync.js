@@ -224,6 +224,8 @@ function clearAllData() {
   appState.stashes = [];
   appState.stashMasked = false;
   appState.dailyRollover = false;
+  appState.largeFont = false;
+  appState.disableBgAnimation = false;
   appState.installDate = getLocalDateStr();
   appState.auditLog = [];
   appState.syncQueue = [];
@@ -238,6 +240,13 @@ function clearAllData() {
     persistState();
   } else {
     persistState();
+  }
+
+  if (typeof applyFontSizePreference === "function") {
+    applyFontSizePreference();
+  }
+  if (typeof wakeBackgroundLoop === "function") {
+    wakeBackgroundLoop();
   }
 
   renderUI();
