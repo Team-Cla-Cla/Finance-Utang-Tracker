@@ -159,7 +159,6 @@ function setupEventListeners() {
     }
   }
   window.addEventListener("keydown", handleGlobalKeydown, true);
-  document.addEventListener("keydown", handleGlobalKeydown, true);
 
   // Close confirmation modal interactions (click anywhere to remove it)
   const closeConfirmModal = document.getElementById("closeConfirmModal");
@@ -497,24 +496,12 @@ function setupEventListeners() {
   });
   const settleForm = document.getElementById("settleForm");
   settleForm.addEventListener("submit", submitSettle);
-  settleForm.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submitSettle(e);
-    }
-  });
 
   // Edit Modal
   document.getElementById("eCloseBtn").addEventListener("click", closeEdit);
   document.getElementById("eCancelBtn").addEventListener("click", closeEdit);
   const editForm = document.getElementById("editForm");
   editForm.addEventListener("submit", submitEdit);
-  editForm.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submitEdit(e);
-    }
-  });
 
   // Stash Modal & Actions
   const btnOpenStash = document.getElementById("btnOpenStashModal");
@@ -575,11 +562,6 @@ function setupEventListeners() {
       document.getElementById("stashModal").style.display = "none";
     };
     stashForm.addEventListener("submit", handleStashSubmit);
-    stashForm.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        handleStashSubmit(e);
-      }
-    });
   }
 
   // Pills Modal
@@ -587,12 +569,6 @@ function setupEventListeners() {
   document.getElementById("pCloseBtn").addEventListener("click", closeManagePills);
   const presetForm = document.getElementById("presetForm");
   presetForm.addEventListener("submit", submitPreset);
-  presetForm.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      submitPreset(e);
-    }
-  });
 
   // Network listener for auto-sync
   window.addEventListener("online", triggerAutoSync);
