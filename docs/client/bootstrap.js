@@ -1,4 +1,15 @@
 // Application bootstrap entry point.
+
+// Web / PWA mode initialization (bypassed in browser extension context)
+if (typeof window !== "undefined" && window.location && window.location.protocol !== "chrome-extension:" && window.location.protocol !== "moz-extension:") {
+  document.documentElement.classList.add("web-mode");
+  if ("serviceWorker" in navigator && (window.isSecureContext || window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW register notice:", err));
+    });
+  }
+}
+
 // --- Startup ---
 document.addEventListener("DOMContentLoaded", () => {
   const today = getLocalDateStr();

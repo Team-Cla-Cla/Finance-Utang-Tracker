@@ -10,11 +10,6 @@
   <link rel="icon" type="image/png" sizes="16x16" href="icons/icon16.png">
   <link rel="apple-touch-icon" sizes="128x128" href="icons/icon128.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <script>
-    if (typeof window !== "undefined" && window.location.protocol !== "chrome-extension:" && window.location.protocol !== "moz-extension:") {
-      document.documentElement.classList.add("web-mode");
-    }
-  </script>
   <link rel="stylesheet" href="styles/app.css?v=1.0.0">
 </head>
 <body>
@@ -589,12 +584,5 @@
   <script src="google_sync.js?v=1.0.0"></script>
   <script src="client/bootstrap.js?v=1.0.0"></script>
   <script src="popup.js?v=1.0.0"></script>
-  <script>
-    if ("serviceWorker" in navigator && (window.isSecureContext || window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js").catch(err => console.warn("SW register notice:", err));
-      });
-    }
-  </script>
 </body>
 </html>
