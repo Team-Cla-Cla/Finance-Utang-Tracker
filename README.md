@@ -1,5 +1,14 @@
 # Finance & Utang Tracker
 
+[![Live Demo](https://img.shields.io/badge/demo-live-2ea44f?style=flat-square)](https://team-cla-cla.github.io/Finance-Utang-Tracker/)
+[![License](https://img.shields.io/github/license/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
+[![Commit Activity](https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main)
+[![Issues](https://img.shields.io/github/issues/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/issues)
+[![Forks](https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members)
+[![Stars](https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers)
+[![Top Language](https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square)](https://github.com/Team-Cla-Cla/Finance-Utang-Tracker)
+
 Finance & Utang Tracker is an offline-first personal finance, allowance, and debt tracker for students and daily commuters. It is available as:
 
 - A responsive web app and installable Progressive Web App (PWA)
@@ -7,6 +16,21 @@ Finance & Utang Tracker is an offline-first personal finance, allowance, and deb
 - A standalone Python command-line client
 
 The application stores data locally and can optionally synchronize it directly with a Google Sheet through the Google Sheets API. It does not require an application server, database, or third-party hosting service.
+
+## Contents
+
+- [Features](#features)
+- [Demo](#demo)
+- [Requirements](#requirements)
+- [Fork and Deploy Your Own Copy](#fork-and-deploy-your-own-copy)
+- [Google Sheets Synchronization](#google-sheets-synchronization)
+- [Browser Extension Installation](#browser-extension-installation)
+- [Command-Line Client](#command-line-client)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
 
 ## Features
 
