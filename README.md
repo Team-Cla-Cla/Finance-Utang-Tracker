@@ -13,7 +13,8 @@
   <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/commits/main"><img src="https://img.shields.io/github/commit-activity/y/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Commit Activity"></a>&nbsp;
   <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/stargazers"><img src="https://img.shields.io/github/stars/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Stars"></a>&nbsp;
   <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/network/members"><img src="https://img.shields.io/github/forks/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Forks"></a>&nbsp;
-  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker"><img src="https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Top Language"></a>
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker"><img src="https://img.shields.io/github/languages/top/Team-Cla-Cla/Finance-Utang-Tracker?style=flat-square" alt="Top Language"></a>&nbsp;
+  <a href="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/actions/workflows/test.yml"><img src="https://github.com/Team-Cla-Cla/Finance-Utang-Tracker/actions/workflows/test.yml/badge.svg" alt="Tests"></a>
 </p>
 
 [Live Demo](https://team-cla-cla.github.io/Finance-Utang-Tracker/) ·
@@ -40,8 +41,11 @@ The application stores data locally by default. Google Sheets synchronization is
 - [Project Structure](#project-structure)
 - [Testing](#testing)
 - [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [Support](#support)
+- [Contributing](CONTRIBUTING.md)
+- [Support](SUPPORT.md)
+- [Security](SECURITY.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Changelog](CHANGELOG.md)
 - [License](#license)
 
 ## Features
