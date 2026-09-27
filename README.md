@@ -161,6 +161,18 @@ before their UI scripts. Settings also includes a persisted
 **Pause Live Conway Animation** toggle for stopping and resuming background animation work.
 The CI checks that the canonical domain service and both client controllers remain synchronized.
 
+### Responsive Viewport and Navigation Architecture
+
+The application adapts dynamically according to viewport dimensions and execution context:
+
+- **Desktop Viewports (>= 840px):** Renders a multi-column dashboard layout presenting the transaction ledger, debt and activity feeds, and chronometer calendar controls concurrently.
+- **Mobile Devices and Extension Popups (< 840px):** Renders a streamlined single-column layout coordinated by an application bottom navigation bar:
+  - **Tracker:** Balance overview, stash vault, check-in prompt, and quick logging form.
+  - **Utang:** Active borrowed and lent ledgers with debt payoff projections.
+  - **Activity:** Historical transaction feed with natural vertical scrolling.
+  - **Calendar:** Monthly calendar grid, date inspector, and chronometer telemetry.
+- **Viewport Ergonomics:** Utilizes dynamic viewport units (`100dvh`) and safe-area inset padding (`env(safe-area-inset-bottom)`), preventing viewport clipping and eliminating unused vertical space on modern mobile devices.
+
 ## Requirements
 
 The web app and browser extension do not require a build step.
