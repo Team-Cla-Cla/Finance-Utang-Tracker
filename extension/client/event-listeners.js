@@ -572,6 +572,33 @@ function setupEventListeners() {
 
   // Network listener for auto-sync
   window.addEventListener("online", triggerAutoSync);
+
+  // Mobile App Navigation
+  setupMobileNavigation();
+}
+
+// --- Mobile App Navigation Setup ---
+function setupMobileNavigation() {
+  const mobileNav = document.getElementById("mobileNav");
+  const layout = document.querySelector(".dashboard-layout");
+  if (!mobileNav || !layout) return;
+
+  const navButtons = mobileNav.querySelectorAll(".mobile-nav-btn");
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const tab = btn.getAttribute("data-tab");
+      if (!tab) return;
+
+      layout.setAttribute("data-active-tab", tab);
+      navButtons.forEach(b => {
+        const isActive = b.getAttribute("data-tab") === tab;
+        b.classList.toggle("active", isActive);
+        b.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
 }
 
 // System Feature Self-Test Engine

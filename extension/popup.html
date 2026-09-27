@@ -136,27 +136,31 @@
     </div>
 
     <div class="dashboard-col col-right">
-      <!-- Utang Summary & Projection Hero -->
-      <div class="utang-hero">
-        <div class="utang-hero-row mono">
-          <span>I owe: <b id="uIOwe" style="color:var(--negative)">0.00</b></span>
-          <span>Owed to me: <b id="uOwedMe" style="color:var(--positive)">0.00</b></span>
+      <div id="sectionUtang" class="col-section">
+        <!-- Utang Summary & Projection Hero -->
+        <div class="utang-hero">
+          <div class="utang-hero-row mono">
+            <span>I owe: <b id="uIOwe" style="color:var(--negative)">0.00</b></span>
+            <span>Owed to me: <b id="uOwedMe" style="color:var(--positive)">0.00</b></span>
+          </div>
+          <div class="utang-proj mono">
+            Pay now projection: <b id="projPayNow">0.00</b> today &middot; <b id="projWeekPay">0.00</b> week
+          </div>
         </div>
-        <div class="utang-proj mono">
-          Pay now projection: <b id="projPayNow">0.00</b> today &middot; <b id="projWeekPay">0.00</b> week
-        </div>
+
+        <!-- Active Utang -->
+        <div class="section-title"><span>Active Debts (Utang)</span></div>
+        <div id="utangList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:4px 0;">No active debts</div></div>
       </div>
 
-      <!-- Active Utang -->
-      <div class="section-title"><span>Active Debts (Utang)</span></div>
-      <div id="utangList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:4px 0;">No active debts</div></div>
-
-      <!-- Activity Feed -->
-      <div class="section-title">
-        <span>Recent Activity</span>
-        <span id="activityCount" class="mono" style="font-size:0.68rem; color:var(--muted);"></span>
+      <div id="sectionActivity" class="col-section">
+        <!-- Activity Feed -->
+        <div class="section-title">
+          <span>Recent Activity</span>
+          <span id="activityCount" class="mono" style="font-size:0.68rem; color:var(--muted);"></span>
+        </div>
+        <div id="feedList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:10px 0;">No entries yet</div></div>
       </div>
-      <div id="feedList" class="feed"><div style="font-size:0.75rem; color:var(--muted); padding:10px 0;">No entries yet</div></div>
     </div>
 
     <!-- Calendar & Millisecond Clock Column -->
@@ -211,6 +215,26 @@
     </div>
   </div>
   </div> <!-- /.app-container -->
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav id="mobileNav" class="mobile-nav" aria-label="Mobile Navigation">
+    <button type="button" class="mobile-nav-btn active" data-tab="tracker" aria-label="Tracker Tab">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="10" y1="12" x2="18" y2="12"/><line x1="6" y1="16" x2="18" y2="16"/></svg>
+      <span>Tracker</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-tab="utang" aria-label="Utang Debts Tab">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span>Utang</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-tab="activity" aria-label="Recent Activity Tab">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <span>Activity</span>
+    </button>
+    <button type="button" class="mobile-nav-btn" data-tab="calendar" aria-label="Calendar and Chronometer Tab">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Calendar</span>
+    </button>
+  </nav>
 
   <!-- Edit Transaction Modal -->
   <div id="editModal" class="modal">

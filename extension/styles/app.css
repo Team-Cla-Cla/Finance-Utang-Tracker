@@ -18,32 +18,47 @@
     ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
 
     html { width: 380px; box-sizing: border-box; margin: 0; padding: 0; background: #08080a; }
-    body { background: transparent; color: var(--text); padding: 14px; width: 380px; min-width: 380px; max-width: 380px; box-sizing: border-box; max-height: 590px; overflow-x: hidden; overflow-y: auto; margin: 0; position: relative; }
+    body { background: transparent; color: var(--text); padding: 14px 14px 64px 14px; width: 380px; min-width: 380px; max-width: 380px; box-sizing: border-box; max-height: 590px; overflow-x: hidden; overflow-y: auto; margin: 0; position: relative; }
 
     /* Web & Mobile Standalone Mode (GitHub Pages, Phone, Browser Tab) */
-    html.web-mode, body.web-mode {
+    html.web-mode {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 100% !important;
+      min-height: 100vh !important;
+      min-height: 100dvh !important;
+      background: #08080a !important;
+    }
+    html.web-mode body,
+    body.web-mode {
       width: 100% !important;
       min-width: 0 !important;
       max-width: 100% !important;
       height: auto !important;
       min-height: 100vh !important;
+      min-height: 100dvh !important;
       max-height: none !important;
       overflow-x: hidden !important;
       overflow-y: auto !important;
-    }
-    body.web-mode {
       display: flex !important;
       flex-direction: column !important;
       align-items: center !important;
-      padding: 14px 12px 36px 12px !important;
+      padding: 12px 14px calc(72px + env(safe-area-inset-bottom, 0px)) 14px !important;
       background: #08080a !important;
+      box-sizing: border-box !important;
     }
+    html.web-mode .app-container,
     body.web-mode .app-container {
       width: 100% !important;
-      max-width: 440px !important;
+      max-width: 480px !important;
       margin: 0 auto !important;
-      flex: 1 !important;
+      flex: 1 0 auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      box-sizing: border-box !important;
     }
+    html.web-mode #btnOpenTab,
     body.web-mode #btnOpenTab {
       display: none !important;
     }
@@ -106,12 +121,140 @@
     /* Dashboard Layout Containers */
     .dashboard-layout { display: flex; flex-direction: column; width: 100%; }
     .dashboard-col { display: flex; flex-direction: column; width: 100%; }
+    .col-section { display: flex; flex-direction: column; width: 100%; }
+    .mobile-nav { display: none !important; }
 
-    /* Centered View for intermediate sizes (500px - 839px) */
+    /* Mobile & Extension App Navigation Layout (< 840px) */
+    @media (max-width: 839px) {
+      .mobile-nav {
+        display: flex !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 54px;
+        padding-bottom: max(6px, env(safe-area-inset-bottom, 0px));
+        background: rgba(12, 12, 16, 0.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border-top: 1px solid var(--border);
+        z-index: 100;
+        justify-content: space-around;
+        align-items: center;
+        box-sizing: content-box;
+      }
+
+      .mobile-nav-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        flex: 1;
+        height: 100%;
+        background: none;
+        border: none;
+        color: var(--muted);
+        cursor: pointer;
+        padding: 6px 0;
+        transition: color 0.15s ease, transform 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .mobile-nav-btn span {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+        font-size: 0.65rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .mobile-nav-btn svg {
+        stroke: var(--muted);
+        stroke-width: 2;
+        transition: stroke 0.15s ease, transform 0.15s ease;
+      }
+
+      .mobile-nav-btn:active {
+        transform: scale(0.94);
+      }
+
+      .mobile-nav-btn.active {
+        color: var(--text);
+      }
+
+      .mobile-nav-btn.active svg {
+        stroke: var(--text);
+      }
+
+      .mobile-nav-btn.active span {
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      /* Column Visibility Controlled by data-active-tab on .dashboard-layout */
+      .dashboard-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        flex: 1 !important;
+      }
+
+      .dashboard-layout:not([data-active-tab]) .col-left,
+      .dashboard-layout[data-active-tab="tracker"] .col-left {
+        display: flex !important;
+      }
+      .dashboard-layout:not([data-active-tab]) .col-right,
+      .dashboard-layout:not([data-active-tab]) .col-calendar,
+      .dashboard-layout[data-active-tab="tracker"] .col-right,
+      .dashboard-layout[data-active-tab="tracker"] .col-calendar {
+        display: none !important;
+      }
+
+      .dashboard-layout[data-active-tab="utang"] .col-left,
+      .dashboard-layout[data-active-tab="utang"] .col-calendar,
+      .dashboard-layout[data-active-tab="utang"] #sectionActivity {
+        display: none !important;
+      }
+      .dashboard-layout[data-active-tab="utang"] .col-right,
+      .dashboard-layout[data-active-tab="utang"] #sectionUtang {
+        display: flex !important;
+      }
+
+      .dashboard-layout[data-active-tab="activity"] .col-left,
+      .dashboard-layout[data-active-tab="activity"] .col-calendar,
+      .dashboard-layout[data-active-tab="activity"] #sectionUtang {
+        display: none !important;
+      }
+      .dashboard-layout[data-active-tab="activity"] .col-right,
+      .dashboard-layout[data-active-tab="activity"] #sectionActivity {
+        display: flex !important;
+      }
+
+      .dashboard-layout[data-active-tab="calendar"] .col-left,
+      .dashboard-layout[data-active-tab="calendar"] .col-right {
+        display: none !important;
+      }
+      .dashboard-layout[data-active-tab="calendar"] .col-calendar {
+        display: flex !important;
+      }
+
+      /* In compact views, allow full natural height so lists don't feel cramped */
+      #feedList {
+        max-height: none !important;
+        min-height: 200px;
+      }
+      #utangList {
+        max-height: none !important;
+        min-height: 120px;
+      }
+    }
+
+    /* Centered View for intermediate sizes (500px - 839px) in non-web mode */
     @media (min-width: 500px) and (max-width: 839px) {
-      html { width: 100% !important; min-width: 100% !important; max-width: none !important; height: 100%; min-height: 100%; background: #08080a; }
-      body { width: 100% !important; min-width: 0 !important; max-width: none !important; min-height: 100vh; margin: 0 !important; padding: 0 !important; background: transparent; border: none; box-shadow: none; max-height: none; overflow-x: hidden; overflow-y: auto; }
-      .app-container {
+      body:not(.web-mode) { width: 100% !important; min-width: 0 !important; max-width: none !important; min-height: 100vh; margin: 0 !important; padding: 0 !important; background: transparent; border: none; box-shadow: none; max-height: none; overflow-x: hidden; overflow-y: auto; }
+      body:not(.web-mode) .app-container {
         width: calc(100% - 32px);
         min-width: 360px;
         max-width: 520px;
@@ -180,11 +323,19 @@
         flex: 1;
         min-height: 0;
       }
+      .mobile-nav {
+        display: none !important;
+      }
+      #sectionUtang, #sectionActivity {
+        display: flex !important;
+        flex-direction: column;
+        width: 100%;
+      }
       .col-left {
         min-width: 0;
         overflow-y: auto;
         padding-right: 6px;
-        display: flex;
+        display: flex !important;
         flex-direction: column;
       }
       .col-right {
